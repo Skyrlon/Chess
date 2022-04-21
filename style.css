@@ -1,0 +1,45 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
+
+:root {
+  --square-size: 5rem;
+}
+
+body {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#board {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: calc(var(--square-size) * 8);
+  height: calc(var(--square-size) * 8);
+}
+
+.square {
+  width: var(--square-size);
+  height: var(--square-size);
+}
+
+.square {
+  background-color: #d28c45;
+}
+
+#board .square:nth-child(-2n + 8),
+#board .square:nth-child(8) ~ .square:nth-child(-2n + 15),
+#board .square:nth-child(16) ~ .square:nth-child(-2n + 24),
+#board .square:nth-child(24) ~ .square:nth-child(-2n + 31),
+#board .square:nth-child(32) ~ .square:nth-child(-2n + 40),
+#board .square:nth-child(40) ~ .square:nth-child(-2n + 47),
+#board .square:nth-child(48) ~ .square:nth-child(-2n + 56),
+#board .square:nth-child(56) ~ .square:nth-child(-2n + 63) {
+  background-color: #ffcf9f;
+}
