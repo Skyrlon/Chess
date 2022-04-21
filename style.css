@@ -6,7 +6,7 @@ body {
 }
 
 :root {
-  --square-size: 5rem;
+  --squares-size: 5rem;
 }
 
 body {
@@ -20,32 +20,32 @@ body {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  width: calc(var(--square-size) * 8);
-  height: calc(var(--square-size) * 8);
+  width: calc(var(--squares-size) * 8);
+  height: calc(var(--squares-size) * 8);
 }
 
-.square {
-  width: var(--square-size);
-  height: var(--square-size);
+.squares {
+  width: var(--squares-size);
+  height: var(--squares-size);
 }
 
-.square {
+.squares {
   background-color: #d28c45;
 }
 
-#board .square:nth-child(-2n + 8),
-#board .square:nth-child(8) ~ .square:nth-child(-2n + 15),
-#board .square:nth-child(16) ~ .square:nth-child(-2n + 24),
-#board .square:nth-child(24) ~ .square:nth-child(-2n + 31),
-#board .square:nth-child(32) ~ .square:nth-child(-2n + 40),
-#board .square:nth-child(40) ~ .square:nth-child(-2n + 47),
-#board .square:nth-child(48) ~ .square:nth-child(-2n + 56),
-#board .square:nth-child(56) ~ .square:nth-child(-2n + 63) {
+#board .squares:nth-child(-2n + 8),
+#board .squares:nth-child(8) ~ .squares:nth-child(-2n + 15),
+#board .squares:nth-child(16) ~ .squares:nth-child(-2n + 24),
+#board .squares:nth-child(24) ~ .squares:nth-child(-2n + 31),
+#board .squares:nth-child(32) ~ .squares:nth-child(-2n + 40),
+#board .squares:nth-child(40) ~ .squares:nth-child(-2n + 47),
+#board .squares:nth-child(48) ~ .squares:nth-child(-2n + 56),
+#board .squares:nth-child(56) ~ .squares:nth-child(-2n + 63) {
   background-color: #ffcf9f;
 }
 
 .pieces,
 img {
-  width: var(--square-size);
-  height: var(--square-size);
+  width: var(--squares-size);
+  height: var(--squares-size);
 }

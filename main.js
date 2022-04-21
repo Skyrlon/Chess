@@ -7,20 +7,29 @@ function indexInClass(collection, node) {
   return -1;
 }
 
-class Pawn {
-  constructor(element) {
+class Piece {
+  constructor(element, elementsCollection) {
     this.element = element;
+    this.elementsCollection = elementsCollection;
   }
   index() {
-    return indexInClass(document.getElementsByClassName("pawns"), this.element);
+    return indexInClass(this.elementsCollection, this.element);
+  }
+  resetPosition(initialPositions) {
+    const squares = document.getElementsByClassName("squares");
+    const squareToMoveTo = squares[initialPositions[this.index()]];
+    squareToMoveTo.append(this.element);
+  }
+}
+
+class Pawn extends Piece {
+  constructor(element, elementsCollection) {
+    super(element, elementsCollection);
   }
   resetPosition() {
-    const squares = document.getElementsByClassName("square");
-    const squareToMoveTo =
-      this.index() < 8
-        ? squares[this.index() + 8]
-        : squares[squares.length - 1 - this.index()];
-    squareToMoveTo.append(this.element);
+    super.resetPosition([
+      8, 9, 10, 11, 12, 13, 14, 15, 48, 49, 50, 51, 52, 53, 54, 55,
+    ]);
   }
 }
 
@@ -28,7 +37,7 @@ function createBoard() {
   const numberOfSquare = 64;
   for (let i = 0; i < numberOfSquare; i++) {
     const newSquare = document.createElement("div");
-    newSquare.setAttribute("class", "square");
+    newSquare.setAttribute("class", "squares");
     board.append(newSquare);
   }
 }
@@ -70,7 +79,7 @@ let pawns = [];
 function placePieces() {
   const pawnsElements = document.getElementsByClassName("pawns");
   for (let i = 0; i < pawnsElements.length; i++) {
-    pawns.push(new Pawn(pawnsElements[i]));
+    pawns.push(new Pawn(pawnsElements[i], pawnsElements));
   }
   pawns.forEach((pawn) => pawn.resetPosition());
 }
