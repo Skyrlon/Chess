@@ -43,3 +43,9 @@ body {
 #board .square:nth-child(56) ~ .square:nth-child(-2n + 63) {
   background-color: #ffcf9f;
 }
+
+.pieces,
+img {
+  width: var(--square-size);
+  height: var(--square-size);
+}
