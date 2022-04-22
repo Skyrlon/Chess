@@ -22,6 +22,33 @@ class Piece {
   }
 }
 
+class Bishop extends Piece {
+  constructor(element, elementsCollection) {
+    super(element, elementsCollection);
+  }
+  resetPosition() {
+    super.resetPosition([2, 5, 58, 61]);
+  }
+}
+
+class King extends Piece {
+  constructor(element, elementsCollection) {
+    super(element, elementsCollection);
+  }
+  resetPosition() {
+    super.resetPosition([4, 60]);
+  }
+}
+
+class Knight extends Piece {
+  constructor(element, elementsCollection) {
+    super(element, elementsCollection);
+  }
+  resetPosition() {
+    super.resetPosition([1, 6, 57, 62]);
+  }
+}
+
 class Pawn extends Piece {
   constructor(element, elementsCollection) {
     super(element, elementsCollection);
@@ -30,6 +57,24 @@ class Pawn extends Piece {
     super.resetPosition([
       8, 9, 10, 11, 12, 13, 14, 15, 48, 49, 50, 51, 52, 53, 54, 55,
     ]);
+  }
+}
+
+class Queen extends Piece {
+  constructor(element, elementsCollection) {
+    super(element, elementsCollection);
+  }
+  resetPosition() {
+    super.resetPosition([3, 59]);
+  }
+}
+
+class Rook extends Piece {
+  constructor(element, elementsCollection) {
+    super(element, elementsCollection);
+  }
+  resetPosition() {
+    super.resetPosition([0, 7, 56, 63]);
   }
 }
 
@@ -74,14 +119,35 @@ function createPieces() {
 
 createPieces();
 
+let bishops = [];
+let kings = [];
+let knights = [];
 let pawns = [];
+let queens = [];
+let rooks = [];
 
 function placePieces() {
-  const pawnsElements = document.getElementsByClassName("pawns");
-  for (let i = 0; i < pawnsElements.length; i++) {
-    pawns.push(new Pawn(pawnsElements[i], pawnsElements));
-  }
-  pawns.forEach((pawn) => pawn.resetPosition());
+  const allPieces = [
+    { array: bishops, classToUse: Bishop, elementsName: "bishops" },
+    { array: kings, classToUse: King, elementsName: "kings" },
+    { array: knights, classToUse: Knight, elementsName: "knights" },
+    { array: pawns, classToUse: Pawn, elementsName: "pawns" },
+    { array: queens, classToUse: Queen, elementsName: "queens" },
+    { array: rooks, classToUse: Rook, elementsName: "rooks" },
+  ];
+
+  allPieces.forEach((pieces) => {
+    const elements = document.getElementsByClassName(pieces.elementsName);
+    for (let i = 0; i < elements.length; i++) {
+      pieces.array.push(new pieces.classToUse(elements[i], elements));
+    }
+  });
+
+  allPieces.forEach((pieces) => {
+    pieces.array.forEach((piece) => {
+      piece.resetPosition();
+    });
+  });
 }
 
 placePieces();
