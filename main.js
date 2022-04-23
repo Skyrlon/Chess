@@ -119,35 +119,26 @@ function createPieces() {
 
 createPieces();
 
-let bishops = [];
-let kings = [];
-let knights = [];
-let pawns = [];
-let queens = [];
-let rooks = [];
-
 function placePieces() {
-  const allPieces = [
-    { array: bishops, classToUse: Bishop, elementsName: "bishops" },
-    { array: kings, classToUse: King, elementsName: "kings" },
-    { array: knights, classToUse: Knight, elementsName: "knights" },
-    { array: pawns, classToUse: Pawn, elementsName: "pawns" },
-    { array: queens, classToUse: Queen, elementsName: "queens" },
-    { array: rooks, classToUse: Rook, elementsName: "rooks" },
+  const piecesObjects = [
+    { classToUse: Bishop, name: "bishops" },
+    { classToUse: King, name: "kings" },
+    { classToUse: Knight, name: "knights" },
+    { classToUse: Pawn, name: "pawns" },
+    { classToUse: Queen, name: "queens" },
+    { classToUse: Rook, name: "rooks" },
   ];
 
-  allPieces.forEach((pieces) => {
-    const elements = document.getElementsByClassName(pieces.elementsName);
+  const allPieces = [];
+
+  piecesObjects.forEach((pieces) => {
+    const elements = document.getElementsByClassName(pieces.name);
     for (let i = 0; i < elements.length; i++) {
-      pieces.array.push(new pieces.classToUse(elements[i], elements));
+      allPieces.push(new pieces.classToUse(elements[i], elements));
     }
   });
 
-  allPieces.forEach((pieces) => {
-    pieces.array.forEach((piece) => {
-      piece.resetPosition();
-    });
-  });
+  allPieces.forEach((piece) => piece.resetPosition());
 }
 
 placePieces();
