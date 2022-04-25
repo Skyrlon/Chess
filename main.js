@@ -21,7 +21,7 @@ class Piece {
   }
 
   team() {
-    return this.index() > this.elementsCollection.length / 2
+    return this.index() >= this.elementsCollection.length / 2
       ? "white"
       : "black";
   }
@@ -78,7 +78,7 @@ class Pawn extends Piece {
       (this.team() === "black" && squarePosition === this.position + 8)
     ) {
       squareToGo.append(this.element);
-      this.position = squareToGo;
+      this.position = squarePosition;
       resetSquareSelected();
     } else {
       resetSquareSelected();
