@@ -27,10 +27,12 @@ body {
 .squares {
   width: var(--squares-size);
   height: var(--squares-size);
+  background-color: #d28c45;
 }
 
-.squares {
-  background-color: #d28c45;
+.squares.selected {
+  box-sizing: border-box;
+  border: 2px solid green;
 }
 
 #board .squares:nth-child(-2n + 8),

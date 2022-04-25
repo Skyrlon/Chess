@@ -1,4 +1,6 @@
 const board = document.getElementById("board");
+const allPieces = [];
+let squareSelected = null;
 
 function indexInClass(collection, node) {
   for (let i = 0; i < collection.length; i++) {
@@ -11,14 +13,24 @@ class Piece {
   constructor(element, elementsCollection) {
     this.element = element;
     this.elementsCollection = elementsCollection;
+    this.position = null;
   }
+
   index() {
     return indexInClass(this.elementsCollection, this.element);
   }
+
+  team() {
+    return this.index() > this.elementsCollection.length / 2
+      ? "white"
+      : "black";
+  }
+
   resetPosition(initialPositions) {
     const squares = document.getElementsByClassName("squares");
     const squareToMoveTo = squares[initialPositions[this.index()]];
     squareToMoveTo.append(this.element);
+    this.position = initialPositions[this.index()];
   }
 }
 
@@ -58,6 +70,17 @@ class Pawn extends Piece {
       8, 9, 10, 11, 12, 13, 14, 15, 48, 49, 50, 51, 52, 53, 54, 55,
     ]);
   }
+  moveTo(squareToGo) {
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+    if (
+      (this.team() === "white" && squarePosition === this.position - 8) ||
+      (this.team() === "black" && squarePosition === this.position + 8)
+    ) {
+      squareToGo.append(this.element);
+      this.position = squareToGo;
+    }
+  }
 }
 
 class Queen extends Piece {
@@ -83,7 +106,22 @@ function createBoard() {
   for (let i = 0; i < numberOfSquare; i++) {
     const newSquare = document.createElement("div");
     newSquare.setAttribute("class", "squares");
+    newSquare.addEventListener("click", handleSquareClick);
     board.append(newSquare);
+  }
+}
+
+function handleSquareClick(e) {
+  const squares = document.getElementsByClassName("squares");
+  if (!squareSelected && e.target.nodeName === "IMG") {
+    e.target.parentNode.parentNode.classList.add("selected");
+    squareSelected = e.target.parentNode.parentNode;
+  } else if (squareSelected && e.target !== squareSelected) {
+    allPieces
+      .find((piece) => piece.element === squareSelected.children[0])
+      .moveTo(e.target);
+  } else {
+    squareSelected = null;
   }
 }
 
@@ -128,8 +166,6 @@ function placePieces() {
     { classToUse: Queen, name: "queens" },
     { classToUse: Rook, name: "rooks" },
   ];
-
-  const allPieces = [];
 
   piecesObjects.forEach((pieces) => {
     const elements = document.getElementsByClassName(pieces.name);
