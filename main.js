@@ -79,6 +79,9 @@ class Pawn extends Piece {
     ) {
       squareToGo.append(this.element);
       this.position = squareToGo;
+      resetSquareSelected();
+    } else {
+      resetSquareSelected();
     }
   }
 }
@@ -121,7 +124,7 @@ function handleSquareClick(e) {
       .find((piece) => piece.element === squareSelected.children[0])
       .moveTo(e.target);
   } else {
-    squareSelected = null;
+    resetSquareSelected();
   }
 }
 
@@ -175,6 +178,11 @@ function placePieces() {
   });
 
   allPieces.forEach((piece) => piece.resetPosition());
+}
+
+function resetSquareSelected() {
+  squareSelected.classList.toggle("selected");
+  squareSelected = null;
 }
 
 placePieces();
