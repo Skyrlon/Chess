@@ -102,6 +102,19 @@ class Rook extends Piece {
   resetPosition() {
     super.resetPosition([0, 7, 56, 63]);
   }
+  moveTo(squareToGo) {
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+    const correctHorizontalMove =
+      (squarePosition - (this.position % 8)) % 8 === 0;
+    if (correctHorizontalMove) {
+      squareToGo.append(this.element);
+      this.position = squarePosition;
+      resetSquareSelected();
+    } else {
+      resetSquareSelected();
+    }
+  }
 }
 
 function createBoard() {
@@ -110,6 +123,7 @@ function createBoard() {
     const newSquare = document.createElement("div");
     newSquare.setAttribute("class", "squares");
     newSquare.addEventListener("click", handleSquareClick);
+    newSquare.textContent = i;
     board.append(newSquare);
   }
 }
