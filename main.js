@@ -50,6 +50,27 @@ class King extends Piece {
   resetPosition() {
     super.resetPosition([4, 60]);
   }
+  moveTo(squareToGo) {
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+    const authorizedMoves = [
+      this.position - 9,
+      this.position - 8,
+      this.position - 7,
+      this.position - 1,
+      this.position + 1,
+      this.position + 7,
+      this.position + 8,
+      this.position + 9,
+    ];
+    if (authorizedMoves.includes(squarePosition)) {
+      squareToGo.append(this.element);
+      this.position = squarePosition;
+      resetSquareSelected();
+    } else {
+      resetSquareSelected();
+    }
+  }
 }
 
 class Knight extends Piece {
