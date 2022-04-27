@@ -105,9 +105,12 @@ class Rook extends Piece {
   moveTo(squareToGo) {
     const squares = document.getElementsByClassName("squares");
     const squarePosition = indexInClass(squares, squareToGo);
-    const correctHorizontalMove =
+    const correctVerticalMove =
       (squarePosition - (this.position % 8)) % 8 === 0;
-    if (correctHorizontalMove) {
+    const correctHorizontalMove =
+      squarePosition > Math.floor(this.position / 8) * 8 &&
+      squarePosition < Math.floor(this.position / 8) * 8 + 8;
+    if (correctHorizontalMove || correctVerticalMove) {
       squareToGo.append(this.element);
       this.position = squarePosition;
       resetSquareSelected();
@@ -123,7 +126,7 @@ function createBoard() {
     const newSquare = document.createElement("div");
     newSquare.setAttribute("class", "squares");
     newSquare.addEventListener("click", handleSquareClick);
-    newSquare.textContent = i;
+    newSquare.innerHTML = `<span class="squares-number">${i}</span>`;
     board.append(newSquare);
   }
 }
@@ -135,7 +138,7 @@ function handleSquareClick(e) {
     squareSelected = e.target.parentNode.parentNode;
   } else if (squareSelected && e.target !== squareSelected) {
     allPieces
-      .find((piece) => piece.element === squareSelected.children[0])
+      .find((piece) => piece.element === squareSelected.children[1])
       .moveTo(e.target);
   } else {
     resetSquareSelected();

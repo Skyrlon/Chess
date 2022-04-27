@@ -35,6 +35,10 @@ body {
   border: 2px solid green;
 }
 
+.squares-number {
+  position: absolute;
+}
+
 #board .squares:nth-child(-2n + 8),
 #board .squares:nth-child(8) ~ .squares:nth-child(-2n + 15),
 #board .squares:nth-child(16) ~ .squares:nth-child(-2n + 24),
