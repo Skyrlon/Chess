@@ -41,6 +41,21 @@ class Bishop extends Piece {
   resetPosition() {
     super.resetPosition([2, 5, 58, 61]);
   }
+  moveTo(squareToGo) {
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+    const correctTopLeftBotRightDiagonal =
+      (this.position - squarePosition) % 9 === 0;
+    const correctTopRightBotLeftDiagonal =
+      (this.position - squarePosition) % 7 === 0;
+    if (correctTopLeftBotRightDiagonal || correctTopRightBotLeftDiagonal) {
+      squareToGo.append(this.element);
+      this.position = squarePosition;
+      resetSquareSelected();
+    } else {
+      resetSquareSelected();
+    }
+  }
 }
 
 class King extends Piece {
