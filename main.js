@@ -129,6 +129,31 @@ class Queen extends Piece {
   resetPosition() {
     super.resetPosition([3, 59]);
   }
+  moveTo(squareToGo) {
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+    const correctVerticalMove =
+      (squarePosition - (this.position % 8)) % 8 === 0;
+    const correctHorizontalMove =
+      squarePosition > Math.floor(this.position / 8) * 8 &&
+      squarePosition < Math.floor(this.position / 8) * 8 + 8;
+    const correctTopLeftBotRightDiagonal =
+      (this.position - squarePosition) % 9 === 0;
+    const correctTopRightBotLeftDiagonal =
+      (this.position - squarePosition) % 7 === 0;
+    if (
+      correctHorizontalMove ||
+      correctVerticalMove ||
+      correctTopLeftBotRightDiagonal ||
+      correctTopRightBotLeftDiagonal
+    ) {
+      squareToGo.append(this.element);
+      this.position = squarePosition;
+      resetSquareSelected();
+    } else {
+      resetSquareSelected();
+    }
+  }
 }
 
 class Rook extends Piece {
