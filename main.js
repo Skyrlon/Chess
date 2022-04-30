@@ -44,11 +44,28 @@ class Bishop extends Piece {
   moveTo(squareToGo) {
     const squares = document.getElementsByClassName("squares");
     const squarePosition = indexInClass(squares, squareToGo);
-    const correctTopLeftBotRightDiagonal =
-      (this.position - squarePosition) % 9 === 0;
-    const correctTopRightBotLeftDiagonal =
-      (this.position - squarePosition) % 7 === 0;
-    if (correctTopLeftBotRightDiagonal || correctTopRightBotLeftDiagonal) {
+    const correctTopLeftDiagonal =
+      squarePosition < this.position &&
+      (this.position - squarePosition) % 9 === 0 &&
+      squarePosition % 8 !== 7;
+    const correctBottomRightDiagonal =
+      squarePosition > this.position &&
+      (this.position - squarePosition) % 9 === 0 &&
+      squarePosition % 8 !== 0;
+    const correctTopRightDiagonal =
+      squarePosition < this.position &&
+      (this.position - squarePosition) % 7 === 0 &&
+      squarePosition % 8 !== 0;
+    const correctBottomLeftDiagonal =
+      squarePosition > this.position &&
+      (this.position - squarePosition) % 7 === 0 &&
+      squarePosition % 8 !== 7;
+    if (
+      correctTopLeftDiagonal ||
+      correctBottomRightDiagonal ||
+      correctTopRightDiagonal ||
+      correctBottomLeftDiagonal
+    ) {
       squareToGo.append(this.element);
       this.position = squarePosition;
       resetSquareSelected();
@@ -137,15 +154,29 @@ class Queen extends Piece {
     const correctHorizontalMove =
       squarePosition > Math.floor(this.position / 8) * 8 &&
       squarePosition < Math.floor(this.position / 8) * 8 + 8;
-    const correctTopLeftBotRightDiagonal =
-      (this.position - squarePosition) % 9 === 0;
-    const correctTopRightBotLeftDiagonal =
-      (this.position - squarePosition) % 7 === 0;
+    const correctTopLeftDiagonal =
+      squarePosition < this.position &&
+      (this.position - squarePosition) % 9 === 0 &&
+      squarePosition % 8 !== 7;
+    const correctBottomRightDiagonal =
+      squarePosition > this.position &&
+      (this.position - squarePosition) % 9 === 0 &&
+      squarePosition % 8 !== 0;
+    const correctTopRightDiagonal =
+      squarePosition < this.position &&
+      (this.position - squarePosition) % 7 === 0 &&
+      squarePosition % 8 !== 0;
+    const correctBottomLeftDiagonal =
+      squarePosition > this.position &&
+      (this.position - squarePosition) % 7 === 0 &&
+      squarePosition % 8 !== 7;
     if (
       correctHorizontalMove ||
       correctVerticalMove ||
-      correctTopLeftBotRightDiagonal ||
-      correctTopRightBotLeftDiagonal
+      correctTopLeftDiagonal ||
+      correctBottomRightDiagonal ||
+      correctTopRightDiagonal ||
+      correctBottomLeftDiagonal
     ) {
       squareToGo.append(this.element);
       this.position = squarePosition;
