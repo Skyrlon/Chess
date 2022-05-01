@@ -112,6 +112,27 @@ class Knight extends Piece {
   resetPosition() {
     super.resetPosition([1, 6, 57, 62]);
   }
+  moveTo(squareToGo) {
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+    const authorizedMoves = [
+      this.position - 6,
+      this.position - 10,
+      this.position - 15,
+      this.position - 17,
+      this.position + 6,
+      this.position + 10,
+      this.position + 15,
+      this.position + 17,
+    ];
+    if (authorizedMoves.includes(squarePosition)) {
+      squareToGo.append(this.element);
+      this.position = squarePosition;
+      resetSquareSelected();
+    } else {
+      resetSquareSelected();
+    }
+  }
 }
 
 class Pawn extends Piece {
