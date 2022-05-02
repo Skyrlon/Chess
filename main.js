@@ -3,6 +3,10 @@ const board = document.getElementById("board");
 const allPieces = [];
 let squareSelected = null;
 
+createBoard();
+const rows = document.getElementsByClassName("rows");
+const squares = document.getElementsByClassName("squares");
+
 function indexInClass(collection, node) {
   for (let i = 0; i < collection.length; i++) {
     if (collection[i] === node) return i;
@@ -28,28 +32,22 @@ class Piece {
   }
 
   resetPosition(initialPositions) {
-    const squares = document.getElementsByClassName("squares");
-    const squareToMoveTo = squares[initialPositions[this.index()]];
-    squareToMoveTo.append(this.element);
+    initialPositions[this.index()].append(this.element);
     this.position = initialPositions[this.index()];
   }
   attack(elementAttacked, squareToGo) {
     const pieceAttacked = allPieces.find(
       (piece) => piece.element === elementAttacked
     );
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
     if (pieceAttacked.team() === this.team()) {
       resetSquareSelected();
-    } else if (this.isAuthorizedMove(squarePosition)) {
-      pieceAttacked.position = null;
-      pieceAttacked.team() === "white"
-        ? document
-            .querySelectorAll("div.lost-pieces-zone.white")[0]
-            .append(pieceAttacked.element)
-        : document
-            .querySelectorAll("div.lost-pieces-zone.black")[0]
-            .append(pieceAttacked.element);
+    } else if (this.isAuthorizedMove(squareToGo)) {
+      const lostPiecesZone =
+        pieceAttacked.team() === "white"
+          ? document.querySelectorAll("div.lost-pieces-zone.white")[0]
+          : document.querySelectorAll("div.lost-pieces-zone.black")[0];
+      pieceAttacked.position = lostPiecesZone;
+      lostPiecesZone.append(pieceAttacked.element);
       this.moveTo(squareToGo);
     }
   }
@@ -60,38 +58,26 @@ class Bishop extends Piece {
     super(element, elementsCollection);
   }
   resetPosition() {
-    super.resetPosition([2, 5, 58, 61]);
+    super.resetPosition([squares[2], squares[5], squares[58], squares[61]]);
   }
-  isAuthorizedMove(squarePosition) {
-    const correctTopLeftDiagonal =
-      squarePosition < this.position &&
-      (this.position - squarePosition) % 9 === 0 &&
-      squarePosition % 8 !== 7;
-    const correctBottomRightDiagonal =
-      squarePosition > this.position &&
-      (this.position - squarePosition) % 9 === 0 &&
-      squarePosition % 8 !== 0;
-    const correctTopRightDiagonal =
-      squarePosition < this.position &&
-      (this.position - squarePosition) % 7 === 0 &&
-      squarePosition % 8 !== 0;
-    const correctBottomLeftDiagonal =
-      squarePosition > this.position &&
-      (this.position - squarePosition) % 7 === 0 &&
-      squarePosition % 8 !== 7;
-    return [
-      correctTopLeftDiagonal,
-      correctBottomRightDiagonal,
-      correctTopRightDiagonal,
-      correctBottomLeftDiagonal,
-    ].some((v) => !!v);
+  isAuthorizedMove(squareToGo) {
+    const actualPosition = {
+      row: indexInClass(rows, this.position.parentElement),
+      column: indexInClass(this.position.parentElement.children, this.position),
+    };
+    const destination = {
+      row: indexInClass(rows, squareToGo.parentElement),
+      column: indexInClass(squareToGo.parentElement.children, squareToGo),
+    };
+    return (
+      Math.abs(actualPosition.row - destination.row) ===
+      Math.abs(actualPosition.column - destination.column)
+    );
   }
   moveTo(squareToGo) {
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
-    if (this.isAuthorizedMove(squarePosition)) {
+    if (this.isAuthorizedMove(squareToGo)) {
       squareToGo.append(this.element);
-      this.position = squarePosition;
+      this.position = squareToGo;
       resetSquareSelected();
     } else {
       resetSquareSelected();
@@ -104,28 +90,26 @@ class King extends Piece {
     super(element, elementsCollection);
   }
   resetPosition() {
-    super.resetPosition([4, 60]);
+    super.resetPosition([squares[4], squares[60]]);
   }
-  isAuthorizedMove(squarePosition) {
-    const authorizedMoves = [
-      this.position - 9,
-      this.position - 8,
-      this.position - 7,
-      this.position - 1,
-      this.position + 1,
-      this.position + 7,
-      this.position + 8,
-      this.position + 9,
-    ];
-    return authorizedMoves.includes(squarePosition);
+  isAuthorizedMove(squareToGo) {
+    const actualPosition = {
+      row: indexInClass(rows, this.position.parentElement),
+      column: indexInClass(this.position.parentElement.children, this.position),
+    };
+    const destination = {
+      row: indexInClass(rows, squareToGo.parentElement),
+      column: indexInClass(squareToGo.parentElement.children, squareToGo),
+    };
+    return (
+      Math.abs(actualPosition.row - destination.row) < 2 &&
+      Math.abs(actualPosition.column - destination.column) < 2
+    );
   }
   moveTo(squareToGo) {
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
-
-    if (this.isAuthorizedMove(squarePosition)) {
+    if (this.isAuthorizedMove(squareToGo)) {
       squareToGo.append(this.element);
-      this.position = squarePosition;
+      this.position = squareToGo;
       resetSquareSelected();
     } else {
       resetSquareSelected();
@@ -138,27 +122,28 @@ class Knight extends Piece {
     super(element, elementsCollection);
   }
   resetPosition() {
-    super.resetPosition([1, 6, 57, 62]);
+    super.resetPosition([squares[1], squares[6], squares[57], squares[62]]);
   }
-  isAuthorizedMove(squarePosition) {
-    const authorizedMoves = [
-      this.position - 6,
-      this.position - 10,
-      this.position - 15,
-      this.position - 17,
-      this.position + 6,
-      this.position + 10,
-      this.position + 15,
-      this.position + 17,
-    ];
-    return authorizedMoves.includes(squarePosition);
+  isAuthorizedMove(squareToGo) {
+    const actualPosition = {
+      row: indexInClass(rows, this.position.parentElement),
+      column: indexInClass(this.position.parentElement.children, this.position),
+    };
+    const destination = {
+      row: indexInClass(rows, squareToGo.parentElement),
+      column: indexInClass(squareToGo.parentElement.children, squareToGo),
+    };
+    return (
+      (Math.abs(actualPosition.row - destination.row) === 2 &&
+        Math.abs(actualPosition.column - destination.column) === 1) ||
+      (Math.abs(actualPosition.row - destination.row) === 1 &&
+        Math.abs(actualPosition.column - destination.column) === 2)
+    );
   }
   moveTo(squareToGo) {
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
-    if (this.isAuthorizedMove(squarePosition)) {
+    if (this.isAuthorizedMove(squareToGo)) {
       squareToGo.append(this.element);
-      this.position = squarePosition;
+      this.position = squareToGo;
       resetSquareSelected();
     } else {
       resetSquareSelected();
@@ -172,21 +157,45 @@ class Pawn extends Piece {
   }
   resetPosition() {
     super.resetPosition([
-      8, 9, 10, 11, 12, 13, 14, 15, 48, 49, 50, 51, 52, 53, 54, 55,
+      squares[8],
+      squares[9],
+      squares[10],
+      squares[11],
+      squares[12],
+      squares[13],
+      squares[14],
+      squares[15],
+      squares[48],
+      squares[49],
+      squares[50],
+      squares[51],
+      squares[52],
+      squares[53],
+      squares[54],
+      squares[55],
     ]);
   }
-  isAuthorizedMove(squarePosition) {
+  isAuthorizedMove(squareToGo) {
+    const actualPosition = {
+      row: indexInClass(rows, this.position.parentElement),
+      column: indexInClass(this.position.parentElement.children, this.position),
+    };
+    const destination = {
+      row: indexInClass(rows, squareToGo.parentElement),
+      column: indexInClass(squareToGo.parentElement.children, squareToGo),
+    };
     return (
-      (this.team() === "white" && squarePosition === this.position - 8) ||
-      (this.team() === "black" && squarePosition === this.position + 8)
+      ((this.team() === "white" &&
+        destination.row - actualPosition.row === -1) ||
+        (this.team() === "black" &&
+          destination.row - actualPosition.row === 1)) &&
+      destination.column === actualPosition.column
     );
   }
   moveTo(squareToGo) {
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
-    if (this.isAuthorizedMove(squarePosition)) {
+    if (this.isAuthorizedMove(squareToGo)) {
       squareToGo.append(this.element);
-      this.position = squarePosition;
+      this.position = squareToGo;
       resetSquareSelected();
     } else {
       resetSquareSelected();
@@ -199,45 +208,28 @@ class Queen extends Piece {
     super(element, elementsCollection);
   }
   resetPosition() {
-    super.resetPosition([3, 59]);
+    super.resetPosition([squares[3], squares[59]]);
   }
-  isAuthorizedMove(squarePosition) {
-    const correctVerticalMove =
-      (squarePosition - (this.position % 8)) % 8 === 0;
-    const correctHorizontalMove =
-      squarePosition > Math.floor(this.position / 8) * 8 &&
-      squarePosition < Math.floor(this.position / 8) * 8 + 8;
-    const correctTopLeftDiagonal =
-      squarePosition < this.position &&
-      (this.position - squarePosition) % 9 === 0 &&
-      squarePosition % 8 !== 7;
-    const correctBottomRightDiagonal =
-      squarePosition > this.position &&
-      (this.position - squarePosition) % 9 === 0 &&
-      squarePosition % 8 !== 0;
-    const correctTopRightDiagonal =
-      squarePosition < this.position &&
-      (this.position - squarePosition) % 7 === 0 &&
-      squarePosition % 8 !== 0;
-    const correctBottomLeftDiagonal =
-      squarePosition > this.position &&
-      (this.position - squarePosition) % 7 === 0 &&
-      squarePosition % 8 !== 7;
-    return [
-      correctVerticalMove,
-      correctHorizontalMove,
-      correctTopLeftDiagonal,
-      correctBottomRightDiagonal,
-      correctTopRightDiagonal,
-      correctBottomLeftDiagonal,
-    ].some((v) => !!v);
+  isAuthorizedMove(squareToGo) {
+    const actualPosition = {
+      row: indexInClass(rows, this.position.parentElement),
+      column: indexInClass(this.position.parentElement.children, this.position),
+    };
+    const destination = {
+      row: indexInClass(rows, squareToGo.parentElement),
+      column: indexInClass(squareToGo.parentElement.children, squareToGo),
+    };
+    return (
+      Math.abs(actualPosition.row - destination.row) ===
+        Math.abs(actualPosition.column - destination.column) ||
+      actualPosition.row === destination.row ||
+      actualPosition.column === destination.column
+    );
   }
   moveTo(squareToGo) {
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
-    if (this.isAuthorizedMove(squarePosition)) {
+    if (this.isAuthorizedMove(squareToGo)) {
       squareToGo.append(this.element);
-      this.position = squarePosition;
+      this.position = squareToGo;
       resetSquareSelected();
     } else {
       resetSquareSelected();
@@ -250,22 +242,26 @@ class Rook extends Piece {
     super(element, elementsCollection);
   }
   resetPosition() {
-    super.resetPosition([0, 7, 56, 63]);
+    super.resetPosition([squares[0], squares[7], squares[56], squares[63]]);
   }
-  isAuthorizedMove(squarePosition) {
-    const correctVerticalMove =
-      (squarePosition - (this.position % 8)) % 8 === 0;
-    const correctHorizontalMove =
-      squarePosition > Math.floor(this.position / 8) * 8 &&
-      squarePosition < Math.floor(this.position / 8) * 8 + 8;
-    return correctHorizontalMove || correctVerticalMove;
+  isAuthorizedMove(squareToGo) {
+    const actualPosition = {
+      row: indexInClass(rows, this.position.parentElement),
+      column: indexInClass(this.position.parentElement.children, this.position),
+    };
+    const destination = {
+      row: indexInClass(rows, squareToGo.parentElement),
+      column: indexInClass(squareToGo.parentElement.children, squareToGo),
+    };
+    return (
+      actualPosition.row === destination.row ||
+      actualPosition.column === destination.column
+    );
   }
   moveTo(squareToGo) {
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
-    if (this.isAuthorizedMove(squarePosition)) {
+    if (this.isAuthorizedMove(squareToGo)) {
       squareToGo.append(this.element);
-      this.position = squarePosition;
+      this.position = squareToGo;
       resetSquareSelected();
     } else {
       resetSquareSelected();
@@ -274,13 +270,17 @@ class Rook extends Piece {
 }
 
 function createBoard() {
-  const numberOfSquare = 64;
-  for (let i = 0; i < numberOfSquare; i++) {
-    const newSquare = document.createElement("div");
-    newSquare.setAttribute("class", "squares");
-    newSquare.addEventListener("click", handleSquareClick);
-    newSquare.innerHTML = `<span class="squares-number">${i}</span>`;
-    board.append(newSquare);
+  const numberOfRowsAndColumns = 8;
+  for (let i = 0; i < numberOfRowsAndColumns; i++) {
+    const newRow = document.createElement("div");
+    newRow.setAttribute("class", "rows");
+    board.append(newRow);
+    for (let j = 0; j < numberOfRowsAndColumns; j++) {
+      const newSquare = document.createElement("div");
+      newSquare.setAttribute("class", "squares");
+      newSquare.addEventListener("click", handleSquareClick);
+      newRow.append(newSquare);
+    }
   }
 }
 
@@ -291,18 +291,16 @@ function handleSquareClick(e) {
     squareSelected = e.target.parentNode.parentNode;
   } else if (squareSelected && e.target.nodeName === "IMG") {
     allPieces
-      .find((piece) => piece.element === squareSelected.children[1])
+      .find((piece) => piece.element === squareSelected.children[0])
       .attack(e.target.parentElement, e.target.parentElement.parentElement);
   } else if (squareSelected && e.target !== squareSelected) {
     allPieces
-      .find((piece) => piece.element === squareSelected.children[1])
+      .find((piece) => piece.element === squareSelected.children[0])
       .moveTo(e.target);
   } else {
     resetSquareSelected();
   }
 }
-
-createBoard();
 
 function createPieces() {
   const pieces = [
