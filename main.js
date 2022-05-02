@@ -1,4 +1,5 @@
 const board = document.getElementById("board");
+
 const allPieces = [];
 let squareSelected = null;
 
@@ -32,6 +33,26 @@ class Piece {
     squareToMoveTo.append(this.element);
     this.position = initialPositions[this.index()];
   }
+  attack(elementAttacked, squareToGo) {
+    const pieceAttacked = allPieces.find(
+      (piece) => piece.element === elementAttacked
+    );
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+    if (pieceAttacked.team() === this.team()) {
+      resetSquareSelected();
+    } else if (this.isAuthorizedMove(squarePosition)) {
+      pieceAttacked.position = null;
+      pieceAttacked.team() === "white"
+        ? document
+            .querySelectorAll("div.lost-pieces-zone.white")[0]
+            .append(pieceAttacked.element)
+        : document
+            .querySelectorAll("div.lost-pieces-zone.black")[0]
+            .append(pieceAttacked.element);
+      this.moveTo(squareToGo);
+    }
+  }
 }
 
 class Bishop extends Piece {
@@ -41,9 +62,7 @@ class Bishop extends Piece {
   resetPosition() {
     super.resetPosition([2, 5, 58, 61]);
   }
-  moveTo(squareToGo) {
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
+  isAuthorizedMove(squarePosition) {
     const correctTopLeftDiagonal =
       squarePosition < this.position &&
       (this.position - squarePosition) % 9 === 0 &&
@@ -60,12 +79,17 @@ class Bishop extends Piece {
       squarePosition > this.position &&
       (this.position - squarePosition) % 7 === 0 &&
       squarePosition % 8 !== 7;
-    if (
-      correctTopLeftDiagonal ||
-      correctBottomRightDiagonal ||
-      correctTopRightDiagonal ||
-      correctBottomLeftDiagonal
-    ) {
+    return [
+      correctTopLeftDiagonal,
+      correctBottomRightDiagonal,
+      correctTopRightDiagonal,
+      correctBottomLeftDiagonal,
+    ].some((v) => !!v);
+  }
+  moveTo(squareToGo) {
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+    if (this.isAuthorizedMove(squarePosition)) {
       squareToGo.append(this.element);
       this.position = squarePosition;
       resetSquareSelected();
@@ -82,9 +106,7 @@ class King extends Piece {
   resetPosition() {
     super.resetPosition([4, 60]);
   }
-  moveTo(squareToGo) {
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
+  isAuthorizedMove(squarePosition) {
     const authorizedMoves = [
       this.position - 9,
       this.position - 8,
@@ -95,7 +117,13 @@ class King extends Piece {
       this.position + 8,
       this.position + 9,
     ];
-    if (authorizedMoves.includes(squarePosition)) {
+    return authorizedMoves.includes(squarePosition);
+  }
+  moveTo(squareToGo) {
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+
+    if (this.isAuthorizedMove(squarePosition)) {
       squareToGo.append(this.element);
       this.position = squarePosition;
       resetSquareSelected();
@@ -112,9 +140,7 @@ class Knight extends Piece {
   resetPosition() {
     super.resetPosition([1, 6, 57, 62]);
   }
-  moveTo(squareToGo) {
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
+  isAuthorizedMove(squarePosition) {
     const authorizedMoves = [
       this.position - 6,
       this.position - 10,
@@ -125,7 +151,12 @@ class Knight extends Piece {
       this.position + 15,
       this.position + 17,
     ];
-    if (authorizedMoves.includes(squarePosition)) {
+    return authorizedMoves.includes(squarePosition);
+  }
+  moveTo(squareToGo) {
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+    if (this.isAuthorizedMove(squarePosition)) {
       squareToGo.append(this.element);
       this.position = squarePosition;
       resetSquareSelected();
@@ -144,13 +175,16 @@ class Pawn extends Piece {
       8, 9, 10, 11, 12, 13, 14, 15, 48, 49, 50, 51, 52, 53, 54, 55,
     ]);
   }
+  isAuthorizedMove(squarePosition) {
+    return (
+      (this.team() === "white" && squarePosition === this.position - 8) ||
+      (this.team() === "black" && squarePosition === this.position + 8)
+    );
+  }
   moveTo(squareToGo) {
     const squares = document.getElementsByClassName("squares");
     const squarePosition = indexInClass(squares, squareToGo);
-    if (
-      (this.team() === "white" && squarePosition === this.position - 8) ||
-      (this.team() === "black" && squarePosition === this.position + 8)
-    ) {
+    if (this.isAuthorizedMove(squarePosition)) {
       squareToGo.append(this.element);
       this.position = squarePosition;
       resetSquareSelected();
@@ -167,9 +201,7 @@ class Queen extends Piece {
   resetPosition() {
     super.resetPosition([3, 59]);
   }
-  moveTo(squareToGo) {
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
+  isAuthorizedMove(squarePosition) {
     const correctVerticalMove =
       (squarePosition - (this.position % 8)) % 8 === 0;
     const correctHorizontalMove =
@@ -191,14 +223,19 @@ class Queen extends Piece {
       squarePosition > this.position &&
       (this.position - squarePosition) % 7 === 0 &&
       squarePosition % 8 !== 7;
-    if (
-      correctHorizontalMove ||
-      correctVerticalMove ||
-      correctTopLeftDiagonal ||
-      correctBottomRightDiagonal ||
-      correctTopRightDiagonal ||
-      correctBottomLeftDiagonal
-    ) {
+    return [
+      correctVerticalMove,
+      correctHorizontalMove,
+      correctTopLeftDiagonal,
+      correctBottomRightDiagonal,
+      correctTopRightDiagonal,
+      correctBottomLeftDiagonal,
+    ].some((v) => !!v);
+  }
+  moveTo(squareToGo) {
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+    if (this.isAuthorizedMove(squarePosition)) {
       squareToGo.append(this.element);
       this.position = squarePosition;
       resetSquareSelected();
@@ -215,15 +252,18 @@ class Rook extends Piece {
   resetPosition() {
     super.resetPosition([0, 7, 56, 63]);
   }
-  moveTo(squareToGo) {
-    const squares = document.getElementsByClassName("squares");
-    const squarePosition = indexInClass(squares, squareToGo);
+  isAuthorizedMove(squarePosition) {
     const correctVerticalMove =
       (squarePosition - (this.position % 8)) % 8 === 0;
     const correctHorizontalMove =
       squarePosition > Math.floor(this.position / 8) * 8 &&
       squarePosition < Math.floor(this.position / 8) * 8 + 8;
-    if (correctHorizontalMove || correctVerticalMove) {
+    return correctHorizontalMove || correctVerticalMove;
+  }
+  moveTo(squareToGo) {
+    const squares = document.getElementsByClassName("squares");
+    const squarePosition = indexInClass(squares, squareToGo);
+    if (this.isAuthorizedMove(squarePosition)) {
       squareToGo.append(this.element);
       this.position = squarePosition;
       resetSquareSelected();
@@ -249,6 +289,10 @@ function handleSquareClick(e) {
   if (!squareSelected && e.target.nodeName === "IMG") {
     e.target.parentNode.parentNode.classList.add("selected");
     squareSelected = e.target.parentNode.parentNode;
+  } else if (squareSelected && e.target.nodeName === "IMG") {
+    allPieces
+      .find((piece) => piece.element === squareSelected.children[1])
+      .attack(e.target.parentElement, e.target.parentElement.parentElement);
   } else if (squareSelected && e.target !== squareSelected) {
     allPieces
       .find((piece) => piece.element === squareSelected.children[1])
