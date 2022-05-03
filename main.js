@@ -35,13 +35,13 @@ class Piece {
     initialPositions[this.index()].append(this.element);
     this.position = initialPositions[this.index()];
   }
-  attack(elementAttacked, squareToGo) {
+  attack(elementAttacked, squareToGo, attacking) {
     const pieceAttacked = allPieces.find(
       (piece) => piece.element === elementAttacked
     );
     if (pieceAttacked.team() === this.team()) {
       resetSquareSelected();
-    } else if (this.isAuthorizedMove(squareToGo)) {
+    } else if (this.isAuthorizedMove(squareToGo, attacking)) {
       const lostPiecesZone =
         pieceAttacked.team() === "white"
           ? document.querySelectorAll("div.lost-pieces-zone.white")[0]
@@ -49,6 +49,7 @@ class Piece {
       pieceAttacked.position = lostPiecesZone;
       lostPiecesZone.append(pieceAttacked.element);
       this.moveTo(squareToGo);
+      console.log(this.elementsCollection);
     }
   }
 }
@@ -175,7 +176,7 @@ class Pawn extends Piece {
       squares[55],
     ]);
   }
-  isAuthorizedMove(squareToGo) {
+  isAuthorizedMove(squareToGo, attacking) {
     const actualPosition = {
       row: indexInClass(rows, this.position.parentElement),
       column: indexInClass(this.position.parentElement.children, this.position),
@@ -184,12 +185,29 @@ class Pawn extends Piece {
       row: indexInClass(rows, squareToGo.parentElement),
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
+    const authorizedWhitemove =
+      this.team() === "white" &&
+      destination.row - actualPosition.row === -1 &&
+      destination.column === actualPosition.column;
+    const authorizedWhiteAttack =
+      this.team() === "white" &&
+      attacking &&
+      destination.row - actualPosition.row === -1 &&
+      Math.abs(destination.column - actualPosition.column) === 1;
+    const authorizedBlackmove =
+      this.team() === "black" &&
+      destination.row - actualPosition.row === 1 &&
+      destination.column === actualPosition.column;
+    const authorizedBlackAttack =
+      this.team() === "black" &&
+      attacking &&
+      destination.row - actualPosition.row === 1 &&
+      Math.abs(destination.column - actualPosition.column) === 1;
     return (
-      ((this.team() === "white" &&
-        destination.row - actualPosition.row === -1) ||
-        (this.team() === "black" &&
-          destination.row - actualPosition.row === 1)) &&
-      destination.column === actualPosition.column
+      authorizedWhitemove ||
+      authorizedWhiteAttack ||
+      authorizedBlackmove ||
+      authorizedBlackAttack
     );
   }
   moveTo(squareToGo) {
@@ -200,6 +218,9 @@ class Pawn extends Piece {
     } else {
       resetSquareSelected();
     }
+  }
+  attack(elementAttacked, squareToGo) {
+    super.attack(elementAttacked, squareToGo, true);
   }
 }
 
@@ -362,7 +383,7 @@ function resetSquareSelected() {
 
 function colorPossibleMoves(piece) {
   for (let i = 0; i < squares.length; i++) {
-    if (piece.isAuthorizedMove(squares[i])) {
+    if (piece.isAuthorizedMove(squares[i], true)) {
       squares[i].classList.toggle("possible-move");
     }
   }
