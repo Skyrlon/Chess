@@ -285,10 +285,12 @@ function createBoard() {
 }
 
 function handleSquareClick(e) {
-  const squares = document.getElementsByClassName("squares");
   if (!squareSelected && e.target.nodeName === "IMG") {
     e.target.parentNode.parentNode.classList.add("selected");
-    squareSelected = e.target.parentNode.parentNode;
+    squareSelected = e.target.parentElement.parentElement;
+    colorPossibleMoves(
+      allPieces.find((piece) => piece.element === e.target.parentElement)
+    );
   } else if (squareSelected && e.target.nodeName === "IMG") {
     allPieces
       .find((piece) => piece.element === squareSelected.children[0])
@@ -297,8 +299,6 @@ function handleSquareClick(e) {
     allPieces
       .find((piece) => piece.element === squareSelected.children[0])
       .moveTo(e.target);
-  } else {
-    resetSquareSelected();
   }
 }
 
@@ -355,6 +355,17 @@ function placePieces() {
 function resetSquareSelected() {
   squareSelected.classList.toggle("selected");
   squareSelected = null;
+  for (let i = 0; i < squares.length; i++) {
+    squares[i].classList.remove("possible-move");
+  }
+}
+
+function colorPossibleMoves(piece) {
+  for (let i = 0; i < squares.length; i++) {
+    if (piece.isAuthorizedMove(squares[i])) {
+      squares[i].classList.toggle("possible-move");
+    }
+  }
 }
 
 placePieces();

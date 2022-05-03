@@ -39,14 +39,18 @@ body {
   border: 2px solid green;
 }
 
-#board .rows:nth-child(odd) .squares:nth-child(odd),
-#board .rows:nth-child(even) .squares:nth-child(even) {
-  background-color: #ffcf9f;
+.rows:nth-child(odd) .squares:nth-child(odd),
+.rows:nth-child(even) .squares:nth-child(even) {
+  background: #ffcf9f;
 }
 
-#board .rows:nth-child(odd) .squares:nth-child(even),
-#board .rows:nth-child(even) .squares:nth-child(odd) {
-  background-color: #d28c45;
+.rows:nth-child(odd) .squares:nth-child(even),
+.rows:nth-child(even) .squares:nth-child(odd) {
+  background: #d28c45;
+}
+
+#board .rows .squares.possible-move {
+  background-color: red;
 }
 
 .pieces,
