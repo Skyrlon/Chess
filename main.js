@@ -15,25 +15,20 @@ function indexInClass(collection, node) {
 }
 
 class Piece {
-  constructor(element, elementsCollection) {
+  constructor(element, index, numberOfPieces) {
     this.element = element;
-    this.elementsCollection = elementsCollection;
     this.position = null;
-  }
-
-  index() {
-    return indexInClass(this.elementsCollection, this.element);
+    this.index = index;
+    this.numberOfPieces = numberOfPieces;
   }
 
   team() {
-    return this.index() >= this.elementsCollection.length / 2
-      ? "white"
-      : "black";
+    return this.index >= this.numberOfPieces / 2 ? "white" : "black";
   }
 
   resetPosition(initialPositions) {
-    initialPositions[this.index()].append(this.element);
-    this.position = initialPositions[this.index()];
+    initialPositions[this.index].append(this.element);
+    this.position = initialPositions[this.index];
   }
   attack(elementAttacked, squareToGo, attacking) {
     const pieceAttacked = allPieces.find(
@@ -48,16 +43,12 @@ class Piece {
           : document.querySelectorAll("div.lost-pieces-zone.black")[0];
       pieceAttacked.position = lostPiecesZone;
       lostPiecesZone.append(pieceAttacked.element);
-      this.moveTo(squareToGo);
-      console.log(this.elementsCollection);
+      this.moveTo(squareToGo, attacking);
     }
   }
 }
 
 class Bishop extends Piece {
-  constructor(element, elementsCollection) {
-    super(element, elementsCollection);
-  }
   resetPosition() {
     super.resetPosition([squares[2], squares[5], squares[58], squares[61]]);
   }
@@ -87,9 +78,6 @@ class Bishop extends Piece {
 }
 
 class King extends Piece {
-  constructor(element, elementsCollection) {
-    super(element, elementsCollection);
-  }
   resetPosition() {
     super.resetPosition([squares[4], squares[60]]);
   }
@@ -119,9 +107,6 @@ class King extends Piece {
 }
 
 class Knight extends Piece {
-  constructor(element, elementsCollection) {
-    super(element, elementsCollection);
-  }
   resetPosition() {
     super.resetPosition([squares[1], squares[6], squares[57], squares[62]]);
   }
@@ -153,9 +138,6 @@ class Knight extends Piece {
 }
 
 class Pawn extends Piece {
-  constructor(element, elementsCollection) {
-    super(element, elementsCollection);
-  }
   resetPosition() {
     super.resetPosition([
       squares[8],
@@ -210,8 +192,8 @@ class Pawn extends Piece {
       authorizedBlackAttack
     );
   }
-  moveTo(squareToGo) {
-    if (this.isAuthorizedMove(squareToGo)) {
+  moveTo(squareToGo, attacking) {
+    if (this.isAuthorizedMove(squareToGo, attacking)) {
       squareToGo.append(this.element);
       this.position = squareToGo;
       resetSquareSelected();
@@ -225,9 +207,6 @@ class Pawn extends Piece {
 }
 
 class Queen extends Piece {
-  constructor(element, elementsCollection) {
-    super(element, elementsCollection);
-  }
   resetPosition() {
     super.resetPosition([squares[3], squares[59]]);
   }
@@ -259,9 +238,6 @@ class Queen extends Piece {
 }
 
 class Rook extends Piece {
-  constructor(element, elementsCollection) {
-    super(element, elementsCollection);
-  }
   resetPosition() {
     super.resetPosition([squares[0], squares[7], squares[56], squares[63]]);
   }
@@ -355,18 +331,18 @@ createPieces();
 
 function placePieces() {
   const piecesObjects = [
-    { classToUse: Bishop, name: "bishops" },
-    { classToUse: King, name: "kings" },
-    { classToUse: Knight, name: "knights" },
-    { classToUse: Pawn, name: "pawns" },
-    { classToUse: Queen, name: "queens" },
-    { classToUse: Rook, name: "rooks" },
+    { classToUse: Bishop, name: "bishops", number: 4 },
+    { classToUse: King, name: "kings", number: 2 },
+    { classToUse: Knight, name: "knights", number: 4 },
+    { classToUse: Pawn, name: "pawns", number: 16 },
+    { classToUse: Queen, name: "queens", number: 2 },
+    { classToUse: Rook, name: "rooks", number: 4 },
   ];
 
   piecesObjects.forEach((pieces) => {
     const elements = document.getElementsByClassName(pieces.name);
     for (let i = 0; i < elements.length; i++) {
-      allPieces.push(new pieces.classToUse(elements[i], elements));
+      allPieces.push(new pieces.classToUse(elements[i], i, pieces.number));
     }
   });
 
