@@ -15,11 +15,12 @@ function indexInClass(collection, node) {
 }
 
 class Piece {
-  constructor(element, index, numberOfPieces) {
+  constructor(element, index, numberOfPieces, name) {
     this.element = element;
     this.position = null;
     this.index = index;
     this.numberOfPieces = numberOfPieces;
+    this.name = name;
   }
 
   team() {
@@ -342,7 +343,9 @@ function placePieces() {
   piecesObjects.forEach((pieces) => {
     const elements = document.getElementsByClassName(pieces.name);
     for (let i = 0; i < elements.length; i++) {
-      allPieces.push(new pieces.classToUse(elements[i], i, pieces.number));
+      allPieces.push(
+        new pieces.classToUse(elements[i], i, pieces.number, pieces.name)
+      );
     }
   });
 
@@ -359,8 +362,14 @@ function resetSquareSelected() {
 
 function colorPossibleMoves(piece) {
   for (let i = 0; i < squares.length; i++) {
-    if (piece.isAuthorizedMove(squares[i], true)) {
-      squares[i].classList.toggle("possible-move");
+    if (
+      piece.name === "pawns" &&
+      !!squares[i].children.length &&
+      piece.isAuthorizedMove(squares[i], true)
+    ) {
+      squares[i].classList.add("possible-move");
+    } else if (piece.isAuthorizedMove(squares[i])) {
+      squares[i].classList.add("possible-move");
     }
   }
 }
