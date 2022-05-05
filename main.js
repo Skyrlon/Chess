@@ -139,6 +139,11 @@ class Knight extends Piece {
 }
 
 class Pawn extends Piece {
+  constructor(element, index, numberOfPieces, name) {
+    super(element, index, numberOfPieces, name);
+    this.firstMove = true;
+  }
+
   resetPosition() {
     super.resetPosition([
       squares[8],
@@ -168,28 +173,44 @@ class Pawn extends Piece {
       row: indexInClass(rows, squareToGo.parentElement),
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
-    const authorizedWhitemove =
+    const authorizedWhiteMove =
+      !attacking &&
       this.team() === "white" &&
       destination.row - actualPosition.row === -1 &&
       destination.column === actualPosition.column;
-    const authorizedWhiteAttack =
+    const authorizedWhiteSpecialMove =
+      !attacking &&
       this.team() === "white" &&
+      this.firstMove &&
+      destination.row - actualPosition.row === -2 &&
+      destination.column === actualPosition.column;
+    const authorizedWhiteAttack =
       attacking &&
+      this.team() === "white" &&
       destination.row - actualPosition.row === -1 &&
       Math.abs(destination.column - actualPosition.column) === 1;
-    const authorizedBlackmove =
+    const authorizedBlackMove =
+      !attacking &&
       this.team() === "black" &&
       destination.row - actualPosition.row === 1 &&
       destination.column === actualPosition.column;
-    const authorizedBlackAttack =
+    const authorizedBlackSpecialMove =
+      !attacking &&
       this.team() === "black" &&
+      this.firstMove &&
+      destination.row - actualPosition.row === 2 &&
+      destination.column === actualPosition.column;
+    const authorizedBlackAttack =
       attacking &&
+      this.team() === "black" &&
       destination.row - actualPosition.row === 1 &&
       Math.abs(destination.column - actualPosition.column) === 1;
     return (
-      authorizedWhitemove ||
+      authorizedWhiteMove ||
+      authorizedWhiteSpecialMove ||
       authorizedWhiteAttack ||
-      authorizedBlackmove ||
+      authorizedBlackMove ||
+      authorizedBlackSpecialMove ||
       authorizedBlackAttack
     );
   }
@@ -197,6 +218,7 @@ class Pawn extends Piece {
     if (this.isAuthorizedMove(squareToGo, attacking)) {
       squareToGo.append(this.element);
       this.position = squareToGo;
+      this.firstMove = false;
       resetSquareSelected();
     } else {
       resetSquareSelected();
@@ -368,7 +390,13 @@ function colorPossibleMoves(piece) {
       piece.isAuthorizedMove(squares[i], true)
     ) {
       squares[i].classList.add("possible-move");
-    } else if (piece.isAuthorizedMove(squares[i])) {
+    } else if (
+      piece.name === "pawns" &&
+      !squares[i].children.length &&
+      piece.isAuthorizedMove(squares[i], false)
+    ) {
+      squares[i].classList.add("possible-move");
+    } else if (piece.name !== "pawns" && piece.isAuthorizedMove(squares[i])) {
       squares[i].classList.add("possible-move");
     }
   }
