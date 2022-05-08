@@ -274,11 +274,60 @@ class Queen extends Piece {
       row: indexInClass(rows, squareToGo.parentElement),
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
+    const squaresBetween = [];
+    for (let i = 0; i < squares.length; i++) {
+      const rowRange = [actualPosition.row, destination.row].sort(
+        (a, b) => a - b
+      );
+      const columnRange = [actualPosition.column, destination.column].sort(
+        (a, b) => a - b
+      );
+      const squareRowIndex = indexInClass(rows, squares[i].parentElement);
+      const squareColumnIndex = indexInClass(
+        squares[i].parentElement.children,
+        squares[i]
+      );
+      if (
+        squareRowIndex > rowRange[0] &&
+        squareRowIndex < rowRange[1] &&
+        squareColumnIndex > columnRange[0] &&
+        squareColumnIndex < columnRange[1] &&
+        Math.abs(squareRowIndex - destination.row) ===
+          Math.abs(squareColumnIndex - destination.column) &&
+        squares[i].childElementCount > 0
+      ) {
+        squaresBetween.push(squares[i]);
+      }
+      if (
+        destination.row === actualPosition.row &&
+        squareRowIndex === actualPosition.row &&
+        squareColumnIndex > columnRange[0] &&
+        squareColumnIndex < columnRange[1] &&
+        squares[i].childElementCount > 0
+      ) {
+        squaresBetween.push(squares[i]);
+      }
+      if (
+        destination.column === actualPosition.column &&
+        squareColumnIndex === actualPosition.column &&
+        squareRowIndex > rowRange[0] &&
+        squareRowIndex < rowRange[1] &&
+        squares[i].childElementCount > 0
+      ) {
+        squaresBetween.push(squares[i]);
+      }
+    }
     return (
-      Math.abs(actualPosition.row - destination.row) ===
+      squaresBetween.length === 0 &&
+      !allPieces.find(
+        (piece) =>
+          piece.element === squareToGo.children[0] &&
+          piece.team() === this.team()
+      ) &&
+      (Math.abs(actualPosition.row - destination.row) ===
         Math.abs(actualPosition.column - destination.column) ||
-      actualPosition.row === destination.row ||
-      actualPosition.column === destination.column
+        actualPosition.row === destination.row ||
+        actualPosition.column === destination.column)
     );
   }
   moveTo(squareToGo) {
