@@ -125,7 +125,12 @@ class King extends Piece {
     };
     return (
       Math.abs(actualPosition.row - destination.row) < 2 &&
-      Math.abs(actualPosition.column - destination.column) < 2
+      Math.abs(actualPosition.column - destination.column) < 2 &&
+      !allPieces.find(
+        (piece) =>
+          piece.element === squareToGo.children[0] &&
+          piece.team() === this.team()
+      )
     );
   }
   moveTo(squareToGo) {
