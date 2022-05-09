@@ -158,10 +158,15 @@ class Knight extends Piece {
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
     return (
-      (Math.abs(actualPosition.row - destination.row) === 2 &&
+      !allPieces.find(
+        (piece) =>
+          piece.element === squareToGo.children[0] &&
+          piece.team() === this.team()
+      ) &&
+      ((Math.abs(actualPosition.row - destination.row) === 2 &&
         Math.abs(actualPosition.column - destination.column) === 1) ||
-      (Math.abs(actualPosition.row - destination.row) === 1 &&
-        Math.abs(actualPosition.column - destination.column) === 2)
+        (Math.abs(actualPosition.row - destination.row) === 1 &&
+          Math.abs(actualPosition.column - destination.column) === 2))
     );
   }
   moveTo(squareToGo) {
