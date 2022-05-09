@@ -248,12 +248,17 @@ class Pawn extends Piece {
       destination.row - actualPosition.row === 1 &&
       Math.abs(destination.column - actualPosition.column) === 1;
     return (
-      authorizedWhiteMove ||
-      authorizedWhiteSpecialMove ||
-      authorizedWhiteAttack ||
-      authorizedBlackMove ||
-      authorizedBlackSpecialMove ||
-      authorizedBlackAttack
+      !allPieces.find(
+        (piece) =>
+          piece.element === squareToGo.children[0] &&
+          piece.team() === this.team()
+      ) &&
+      (authorizedWhiteMove ||
+        authorizedWhiteSpecialMove ||
+        authorizedWhiteAttack ||
+        authorizedBlackMove ||
+        authorizedBlackSpecialMove ||
+        authorizedBlackAttack)
     );
   }
   moveTo(squareToGo, attacking) {
