@@ -1,9 +1,16 @@
+const startButton = document.getElementById("start-button");
+
+startButton.addEventListener("click", function () {
+  createBoard();
+  createPieces();
+  placePieces();
+});
+
 const board = document.getElementById("board");
 
 const allPieces = [];
 let squareSelected = null;
 
-createBoard();
 const rows = document.getElementsByClassName("rows");
 const squares = document.getElementsByClassName("squares");
 
@@ -484,8 +491,6 @@ function createPieces() {
   });
 }
 
-createPieces();
-
 function placePieces() {
   const piecesObjects = [
     { classToUse: Bishop, name: "bishops", number: 4 },
@@ -535,5 +540,3 @@ function colorPossibleMoves(piece) {
     }
   }
 }
-
-placePieces();

@@ -69,7 +69,17 @@ img {
 .lost-pieces-zone {
   display: flex;
   flex-wrap: wrap;
-  border: 1px solid;
   width: calc(var(--squares-size) * 4);
   height: calc(var(--squares-size) * 4);
+}
+
+#start-button {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
+  font-size: 5rem;
+}
+
+#start-button.game-started {
+  display: none;
 }
