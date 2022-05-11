@@ -1,6 +1,7 @@
 const startButton = document.getElementById("start-button");
 
 startButton.addEventListener("click", function () {
+  startButton.classList.add("game-started");
   createBoard();
   createPieces();
   placePieces();
@@ -10,6 +11,8 @@ const board = document.getElementById("board");
 
 const allPieces = [];
 let squareSelected = null;
+
+let whoIsPlaying = "white";
 
 const rows = document.getElementsByClassName("rows");
 const squares = document.getElementsByClassName("squares");
@@ -446,20 +449,31 @@ function createBoard() {
 }
 
 function handleSquareClick(e) {
-  if (!squareSelected && e.target.nodeName === "IMG") {
-    e.target.parentNode.parentNode.classList.add("selected");
-    squareSelected = e.target.parentElement.parentElement;
+  //Mettre une autre condition pour toggle squareSelected et empecher whoIsPlaying de changer
+  if (
+    !squareSelected &&
+    !!allPieces.find(
+      (piece) =>
+        piece.position === e.currentTarget && piece.team() === whoIsPlaying
+    )
+  ) {
+    e.currentTarget.classList.add("selected");
+    squareSelected = e.currentTarget;
     colorPossibleMoves(
-      allPieces.find((piece) => piece.element === e.target.parentElement)
+      allPieces.find((piece) => piece.position === e.currentTarget)
     );
+  } else if (squareSelected && e.currentTarget === squareSelected) {
+    resetSquareSelected();
   } else if (squareSelected && e.target.nodeName === "IMG") {
     allPieces
       .find((piece) => piece.element === squareSelected.children[0])
       .attack(e.target.parentElement, e.target.parentElement.parentElement);
+    whoIsPlaying = whoIsPlaying === "white" ? "black" : "white";
   } else if (squareSelected && e.target !== squareSelected) {
     allPieces
       .find((piece) => piece.element === squareSelected.children[0])
       .moveTo(e.target);
+    whoIsPlaying = whoIsPlaying === "white" ? "black" : "white";
   }
 }
 
