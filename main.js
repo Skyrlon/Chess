@@ -4,15 +4,56 @@ startButton.addEventListener("click", function () {
   startButton.classList.add("game-started");
   whitePlayer.isTheirTurn = true;
   blackPlayer.isTheirTurn = false;
+  game.statusOfTheGame = "on going";
   createBoard();
   createPieces();
   placePieces();
 });
 
 const board = document.getElementById("board");
+const rows = document.getElementsByClassName("rows");
+const squares = document.getElementsByClassName("squares");
 
 const allPieces = [];
 let squareSelected = null;
+
+class Game {
+  constructor(statusOfTheGame) {
+    this.statusOfTheGame = statusOfTheGame;
+  }
+  getStatusOfTheGame() {
+    const blackKing = allPieces.find(
+      (piece) => piece.name === "kings" && piece.team() === "black"
+    );
+    const whiteKing = allPieces.find(
+      (piece) => piece.name === "kings" && piece.team() === "white"
+    );
+    if (
+      blackKing.isAbleToMove() &&
+      allPieces.find(
+        (piece) =>
+          piece.team() !== blackKing.team() &&
+          !!piece
+            .getAllPossibleMoves()
+            .find((possibleMove) => possibleMove === blackKing.position)
+      )
+    ) {
+      alert("black king is in check ");
+    }
+    if (
+      whiteKing.isAbleToMove() &&
+      allPieces.find(
+        (piece) =>
+          piece.team() !== whiteKing.team() &&
+          !!piece
+            .getAllPossibleMoves()
+            .find((possibleMove) => possibleMove === whiteKing.position)
+      )
+    ) {
+      alert("white king is in check");
+    }
+  }
+}
 
 class Player {
   constructor(team, isTheirTurn) {
@@ -21,10 +62,9 @@ class Player {
   }
 }
 
+const game = new Game("not started");
 const whitePlayer = new Player("white", true);
 const blackPlayer = new Player("black", false);
-const rows = document.getElementsByClassName("rows");
-const squares = document.getElementsByClassName("squares");
 
 function indexInClass(collection, node) {
   for (let i = 0; i < collection.length; i++) {
@@ -44,6 +84,13 @@ class Piece {
 
   team() {
     return this.index >= this.numberOfPieces / 2 ? "white" : "black";
+  }
+
+  getAllPossibleMoves() {
+    const allPossibleMoves = [...squares].filter((square) =>
+      this.isAuthorizedMove(square)
+    );
+    return allPossibleMoves;
   }
 
   resetPosition(initialPositions) {
@@ -151,6 +198,20 @@ class King extends Piece {
           piece.team() === this.team()
       )
     );
+  }
+  isAbleToMove() {
+    const allPossibleMoves = this.getAllPossibleMoves().filter(
+      (possibleMove) =>
+        !allPieces.some(
+          (piece) =>
+            piece.team() !== this.team() &&
+            piece
+              .getAllPossibleMoves()
+              .find((enemyMove) => enemyMove === possibleMove)
+        )
+    );
+
+    return allPossibleMoves.length > 0;
   }
   moveTo(squareToGo) {
     if (this.isAuthorizedMove(squareToGo)) {
@@ -480,12 +541,14 @@ function handleSquareClick(e) {
       .attack(e.target.parentElement, e.target.parentElement.parentElement);
     whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
     blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
+    game.getStatusOfTheGame();
   } else if (squareSelected && e.target !== squareSelected) {
     allPieces
       .find((piece) => piece.element === squareSelected.children[0])
       .moveTo(e.target);
     whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
     blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
+    game.getStatusOfTheGame();
   }
 }
 
