@@ -22,35 +22,20 @@ class Game {
     this.statusOfTheGame = statusOfTheGame;
   }
   getStatusOfTheGame() {
-    const blackKing = allPieces.find(
-      (piece) => piece.name === "kings" && piece.team() === "black"
+    const kingInCheck = allPieces.find(
+      (piece) =>
+        piece.name === "kings" &&
+        piece?.isAbleToMove() &&
+        allPieces.find(
+          (otherPiece) =>
+            piece.team() !== otherPiece.team() &&
+            !!otherPiece
+              .getAllPossibleMoves()
+              .find((possibleMove) => possibleMove === piece.position)
+        )
     );
-    const whiteKing = allPieces.find(
-      (piece) => piece.name === "kings" && piece.team() === "white"
-    );
-    if (
-      blackKing.isAbleToMove() &&
-      allPieces.find(
-        (piece) =>
-          piece.team() !== blackKing.team() &&
-          !!piece
-            .getAllPossibleMoves()
-            .find((possibleMove) => possibleMove === blackKing.position)
-      )
-    ) {
-      alert("black king is in check ");
-    }
-    if (
-      whiteKing.isAbleToMove() &&
-      allPieces.find(
-        (piece) =>
-          piece.team() !== whiteKing.team() &&
-          !!piece
-            .getAllPossibleMoves()
-            .find((possibleMove) => possibleMove === whiteKing.position)
-      )
-    ) {
-      alert("white king is in check");
+    if (kingInCheck) {
+      alert(`${kingInCheck.team()} king is in check`);
     }
   }
 }
