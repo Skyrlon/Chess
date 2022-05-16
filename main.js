@@ -22,10 +22,9 @@ class Game {
     this.statusOfTheGame = statusOfTheGame;
   }
   getStatusOfTheGame() {
-    const kingInCheck = allPieces.find(
+    const kingAttacked = allPieces.find(
       (piece) =>
         piece.name === "kings" &&
-        piece?.isAbleToMove() &&
         allPieces.find(
           (otherPiece) =>
             piece.team() !== otherPiece.team() &&
@@ -34,8 +33,8 @@ class Game {
               .find((possibleMove) => possibleMove === piece.position)
         )
     );
-    if (kingInCheck) {
-      alert(`${kingInCheck.team()} king is in check`);
+    if (kingAttacked && kingAttacked?.isAbleToMove()) {
+      alert(`${kingAttacked.team()} king is in check`);
     }
   }
 }
@@ -98,6 +97,15 @@ class Piece {
       this.moveTo(squareToGo, attacking);
     }
   }
+  moveTo(squareToGo) {
+    if (this.isAuthorizedMove(squareToGo)) {
+      squareToGo.append(this.element);
+      this.position = squareToGo;
+      resetSquareSelected();
+    } else {
+      resetSquareSelected();
+    }
+  }
 }
 
 class Bishop extends Piece {
@@ -150,15 +158,6 @@ class Bishop extends Piece {
       )
     );
   }
-  moveTo(squareToGo) {
-    if (this.isAuthorizedMove(squareToGo)) {
-      squareToGo.append(this.element);
-      this.position = squareToGo;
-      resetSquareSelected();
-    } else {
-      resetSquareSelected();
-    }
-  }
 }
 
 class King extends Piece {
@@ -198,15 +197,6 @@ class King extends Piece {
 
     return allPossibleMoves.length > 0;
   }
-  moveTo(squareToGo) {
-    if (this.isAuthorizedMove(squareToGo)) {
-      squareToGo.append(this.element);
-      this.position = squareToGo;
-      resetSquareSelected();
-    } else {
-      resetSquareSelected();
-    }
-  }
 }
 
 class Knight extends Piece {
@@ -233,15 +223,6 @@ class Knight extends Piece {
         (Math.abs(actualPosition.row - destination.row) === 1 &&
           Math.abs(actualPosition.column - destination.column) === 2))
     );
-  }
-  moveTo(squareToGo) {
-    if (this.isAuthorizedMove(squareToGo)) {
-      squareToGo.append(this.element);
-      this.position = squareToGo;
-      resetSquareSelected();
-    } else {
-      resetSquareSelected();
-    }
   }
 }
 
@@ -410,15 +391,6 @@ class Queen extends Piece {
         actualPosition.column === destination.column)
     );
   }
-  moveTo(squareToGo) {
-    if (this.isAuthorizedMove(squareToGo)) {
-      squareToGo.append(this.element);
-      this.position = squareToGo;
-      resetSquareSelected();
-    } else {
-      resetSquareSelected();
-    }
-  }
 }
 
 class Rook extends Piece {
@@ -476,15 +448,6 @@ class Rook extends Piece {
           piece.team() === this.team()
       )
     );
-  }
-  moveTo(squareToGo) {
-    if (this.isAuthorizedMove(squareToGo)) {
-      squareToGo.append(this.element);
-      this.position = squareToGo;
-      resetSquareSelected();
-    } else {
-      resetSquareSelected();
-    }
   }
 }
 
