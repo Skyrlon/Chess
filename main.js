@@ -33,9 +33,55 @@ class Game {
               .find((possibleMove) => possibleMove === piece.position)
         )
     );
-    if (kingAttacked && kingAttacked?.isAbleToMove()) {
+    if (
+      kingAttacked &&
+      (kingAttacked?.isAbleToMove() ||
+        this.canTeamPreventCheckMate(kingAttacked))
+    ) {
       alert(`${kingAttacked.team()} king is in check`);
     }
+  }
+
+  canTeamPreventCheckMate(kingAttacked) {
+    const kingAttackedTeamMates = [...allPieces].filter(
+      (piece) => piece.team() === kingAttacked?.team()
+    );
+    const canOneTeamMateProtectKing = kingAttackedTeamMates.some((teamMate) => {
+      return teamMate.getAllPossibleMoves().some((possibleMove) => {
+        const allPiecesWithSimulatedMove = [...allPieces].map((piece) => {
+          const newPiece = {
+            ...piece,
+            team: piece.team(),
+            allPossibleMoves: piece.getAllPossibleMoves(),
+          };
+          if (piece === teamMate) {
+            newPiece.position = possibleMove;
+          }
+          return newPiece;
+        });
+        const foundKingAttacked = allPiecesWithSimulatedMove.find(
+          (piece) =>
+            piece.name === "kings" &&
+            allPiecesWithSimulatedMove.find(
+              (otherPiece) =>
+                piece.team !== otherPiece.team &&
+                !allPiecesWithSimulatedMove.find(
+                  (simulatedTeamMate) =>
+                    simulatedTeamMate.name !== "kings" &&
+                    otherPiece.allPossibleMoves.includes(
+                      simulatedTeamMate.position
+                    )
+                ) &&
+                !!otherPiece.allPossibleMoves.find(
+                  (possibleMove) => possibleMove === piece.position
+                )
+            )
+        );
+        return !foundKingAttacked;
+      });
+    });
+
+    return canOneTeamMateProtectKing;
   }
 }
 
@@ -97,10 +143,11 @@ class Piece {
       this.moveTo(squareToGo, attacking);
     }
   }
-  moveTo(squareToGo) {
-    if (this.isAuthorizedMove(squareToGo)) {
+  moveTo(squareToGo, attacking) {
+    if (this.isAuthorizedMove(squareToGo, attacking)) {
       squareToGo.append(this.element);
       this.position = squareToGo;
+      this.firstMove = false;
       resetSquareSelected();
     } else {
       resetSquareSelected();
@@ -306,16 +353,6 @@ class Pawn extends Piece {
         authorizedBlackSpecialMove ||
         authorizedBlackAttack)
     );
-  }
-  moveTo(squareToGo, attacking) {
-    if (this.isAuthorizedMove(squareToGo, attacking)) {
-      squareToGo.append(this.element);
-      this.position = squareToGo;
-      this.firstMove = false;
-      resetSquareSelected();
-    } else {
-      resetSquareSelected();
-    }
   }
   attack(elementAttacked, squareToGo) {
     super.attack(elementAttacked, squareToGo, true);
