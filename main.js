@@ -35,10 +35,16 @@ class Game {
     );
     if (
       kingAttacked &&
-      (kingAttacked?.isAbleToMove() ||
+      (kingAttacked.getAllPossibleMoves().length > 0 ||
         this.canTeamPreventCheckMate(kingAttacked))
     ) {
       alert(`${kingAttacked.team()} king is in check`);
+    } else if (
+      kingAttacked &&
+      kingAttacked.getAllPossibleMoves().length === 0 &&
+      !this.canTeamPreventCheckMate(kingAttacked)
+    ) {
+      alert(`${kingAttacked.team()} king is in checkmate`);
     }
   }
 
@@ -46,8 +52,8 @@ class Game {
     const kingAttackedTeamMates = [...allPieces].filter(
       (piece) => piece.team() === kingAttacked?.team()
     );
-    const canOneTeamMateProtectKing = kingAttackedTeamMates.some((teamMate) => {
-      return teamMate.getAllPossibleMoves().some((possibleMove) => {
+    const canOneTeamMateProtectKing = kingAttackedTeamMates.find((teamMate) => {
+      return teamMate.getAllPossibleMoves().find((possibleMove) => {
         const allPiecesWithSimulatedMove = [...allPieces].map((piece) => {
           const newPiece = {
             ...piece,
@@ -227,22 +233,12 @@ class King extends Piece {
         (piece) =>
           piece.element === squareToGo.children[0] &&
           piece.team() === this.team()
+      ) &&
+      !allPieces.find(
+        (piece) =>
+          piece.team() !== this.team() && piece.isAuthorizedMove(squareToGo)
       )
     );
-  }
-  isAbleToMove() {
-    const allPossibleMoves = this.getAllPossibleMoves().filter(
-      (possibleMove) =>
-        !allPieces.some(
-          (piece) =>
-            piece.team() !== this.team() &&
-            piece
-              .getAllPossibleMoves()
-              .find((enemyMove) => enemyMove === possibleMove)
-        )
-    );
-
-    return allPossibleMoves.length > 0;
   }
 }
 
