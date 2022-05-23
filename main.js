@@ -29,19 +29,19 @@ class Game {
           (otherPiece) =>
             piece.team() !== otherPiece.team() &&
             !!otherPiece
-              .getAllPossibleMoves()
+              .getAllPossibleMoves(allPieces)
               .find((possibleMove) => possibleMove === piece.position)
         )
     );
     if (
       kingAttacked &&
-      (kingAttacked.getAllPossibleMoves().length > 0 ||
+      (kingAttacked.getAllPossibleMoves(allPieces).length > 0 ||
         this.canTeamPreventCheckMate(kingAttacked))
     ) {
       alert(`${kingAttacked.team()} king is in check`);
     } else if (
       kingAttacked &&
-      kingAttacked.getAllPossibleMoves().length === 0 &&
+      kingAttacked.getAllPossibleMoves(allPieces).length === 0 &&
       !this.canTeamPreventCheckMate(kingAttacked)
     ) {
       alert(`${kingAttacked.team()} king is in checkmate`);
@@ -53,12 +53,12 @@ class Game {
       (piece) => piece.team() === kingAttacked?.team()
     );
     const canOneTeamMateProtectKing = kingAttackedTeamMates.find((teamMate) => {
-      return teamMate.getAllPossibleMoves().find((possibleMove) => {
+      return teamMate.getAllPossibleMoves(allPieces).find((possibleMove) => {
         const allPiecesWithSimulatedMove = [...allPieces].map((piece) => {
           const newPiece = {
             ...piece,
             team: piece.team(),
-            allPossibleMoves: piece.getAllPossibleMoves(),
+            allPossibleMoves: piece.getAllPossibleMoves(allPieces),
           };
           if (piece === teamMate) {
             newPiece.position = possibleMove;
@@ -122,9 +122,9 @@ class Piece {
     return this.index >= this.numberOfPieces / 2 ? "white" : "black";
   }
 
-  getAllPossibleMoves() {
+  getAllPossibleMoves(piecesPosition) {
     const allPossibleMoves = [...squares].filter((square) =>
-      this.isAuthorizedMove(square)
+      this.isAuthorizedMove(square, piecesPosition)
     );
     return allPossibleMoves;
   }
@@ -139,7 +139,7 @@ class Piece {
     );
     if (pieceAttacked.team() === this.team()) {
       resetSquareSelected();
-    } else if (this.isAuthorizedMove(squareToGo, attacking)) {
+    } else if (this.isAuthorizedMove(squareToGo, piecesPosition, attacking)) {
       const lostPiecesZone =
         pieceAttacked.team() === "white"
           ? document.querySelectorAll("div.lost-pieces-zone.white")[0]
@@ -149,8 +149,8 @@ class Piece {
       this.moveTo(squareToGo, attacking);
     }
   }
-  moveTo(squareToGo, attacking) {
-    if (this.isAuthorizedMove(squareToGo, attacking)) {
+  moveTo(squareToGo, piecesPosition, attacking) {
+    if (this.isAuthorizedMove(squareToGo, piecesPosition, attacking)) {
       squareToGo.append(this.element);
       this.position = squareToGo;
       this.firstMove = false;
@@ -165,7 +165,7 @@ class Bishop extends Piece {
   resetPosition() {
     super.resetPosition([squares[2], squares[5], squares[58], squares[61]]);
   }
-  isAuthorizedMove(squareToGo) {
+  isAuthorizedMove(squareToGo, piecesPosition) {
     const actualPosition = {
       row: indexInClass(rows, this.position.parentElement),
       column: indexInClass(this.position.parentElement.children, this.position),
@@ -174,7 +174,7 @@ class Bishop extends Piece {
       row: indexInClass(rows, squareToGo.parentElement),
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
-    const squaresBetween = [];
+    const piecesBetween = [];
     for (let i = 0; i < squares.length; i++) {
       const rowRange = [actualPosition.row, destination.row].sort(
         (a, b) => a - b
@@ -194,16 +194,16 @@ class Bishop extends Piece {
         squareColumnIndex < columnRange[1] &&
         Math.abs(squareRowIndex - destination.row) ===
           Math.abs(squareColumnIndex - destination.column) &&
-        squares[i].childElementCount > 0
+        piecesPosition.find((piece) => piece.position === squares[i])
       ) {
-        squaresBetween.push(squares[i]);
+        piecesBetween.push(squares[i]);
       }
     }
 
     return (
       Math.abs(actualPosition.row - destination.row) ===
         Math.abs(actualPosition.column - destination.column) &&
-      squaresBetween.length === 0 &&
+      piecesBetween.length === 0 &&
       !allPieces.find(
         (piece) =>
           piece.element === squareToGo.children[0] &&
@@ -217,7 +217,7 @@ class King extends Piece {
   resetPosition() {
     super.resetPosition([squares[4], squares[60]]);
   }
-  isAuthorizedMove(squareToGo) {
+  isAuthorizedMove(squareToGo, piecesPosition) {
     const actualPosition = {
       row: indexInClass(rows, this.position.parentElement),
       column: indexInClass(this.position.parentElement.children, this.position),
@@ -236,7 +236,8 @@ class King extends Piece {
       ) &&
       !allPieces.find(
         (piece) =>
-          piece.team() !== this.team() && piece.isAuthorizedMove(squareToGo)
+          piece.team() !== this.team() &&
+          piece.isAuthorizedMove(squareToGo, piecesPosition)
       )
     );
   }
@@ -295,7 +296,7 @@ class Pawn extends Piece {
       squares[55],
     ]);
   }
-  isAuthorizedMove(squareToGo, attacking) {
+  isAuthorizedMove(squareToGo, piecesPosition, attacking) {
     const actualPosition = {
       row: indexInClass(rows, this.position.parentElement),
       column: indexInClass(this.position.parentElement.children, this.position),
@@ -359,7 +360,7 @@ class Queen extends Piece {
   resetPosition() {
     super.resetPosition([squares[3], squares[59]]);
   }
-  isAuthorizedMove(squareToGo) {
+  isAuthorizedMove(squareToGo, piecesPosition) {
     const actualPosition = {
       row: indexInClass(rows, this.position.parentElement),
       column: indexInClass(this.position.parentElement.children, this.position),
@@ -368,7 +369,7 @@ class Queen extends Piece {
       row: indexInClass(rows, squareToGo.parentElement),
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
-    const squaresBetween = [];
+    const piecesBetween = [];
     for (let i = 0; i < squares.length; i++) {
       const rowRange = [actualPosition.row, destination.row].sort(
         (a, b) => a - b
@@ -388,31 +389,31 @@ class Queen extends Piece {
         squareColumnIndex < columnRange[1] &&
         Math.abs(squareRowIndex - destination.row) ===
           Math.abs(squareColumnIndex - destination.column) &&
-        squares[i].childElementCount > 0
+        piecesPosition.find((piece) => piece.position === squares[i])
       ) {
-        squaresBetween.push(squares[i]);
+        piecesBetween.push(squares[i]);
       }
       if (
         destination.row === actualPosition.row &&
         squareRowIndex === actualPosition.row &&
         squareColumnIndex > columnRange[0] &&
         squareColumnIndex < columnRange[1] &&
-        squares[i].childElementCount > 0
+        piecesPosition.find((piece) => piece.position === squares[i])
       ) {
-        squaresBetween.push(squares[i]);
+        piecesBetween.push(squares[i]);
       }
       if (
         destination.column === actualPosition.column &&
         squareColumnIndex === actualPosition.column &&
         squareRowIndex > rowRange[0] &&
         squareRowIndex < rowRange[1] &&
-        squares[i].childElementCount > 0
+        piecesPosition.find((piece) => piece.position === squares[i])
       ) {
-        squaresBetween.push(squares[i]);
+        piecesBetween.push(squares[i]);
       }
     }
     return (
-      squaresBetween.length === 0 &&
+      piecesBetween.length === 0 &&
       !allPieces.find(
         (piece) =>
           piece.element === squareToGo.children[0] &&
@@ -430,7 +431,7 @@ class Rook extends Piece {
   resetPosition() {
     super.resetPosition([squares[0], squares[7], squares[56], squares[63]]);
   }
-  isAuthorizedMove(squareToGo) {
+  isAuthorizedMove(squareToGo, piecesPosition) {
     const actualPosition = {
       row: indexInClass(rows, this.position.parentElement),
       column: indexInClass(this.position.parentElement.children, this.position),
@@ -439,7 +440,7 @@ class Rook extends Piece {
       row: indexInClass(rows, squareToGo.parentElement),
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
-    const squaresBetween = [];
+    const piecesBetween = [];
     for (let i = 0; i < squares.length; i++) {
       const squareRowIndex = indexInClass(rows, squares[i].parentElement);
       const squareColumnIndex = indexInClass(
@@ -457,24 +458,24 @@ class Rook extends Piece {
         squareRowIndex === actualPosition.row &&
         squareColumnIndex > columnRange[0] &&
         squareColumnIndex < columnRange[1] &&
-        squares[i].childElementCount > 0
+        piecesPosition.find((piece) => piece.position === squares[i])
       ) {
-        squaresBetween.push(squares[i]);
+        piecesBetween.push(squares[i]);
       }
       if (
         destination.column === actualPosition.column &&
         squareColumnIndex === actualPosition.column &&
         squareRowIndex > rowRange[0] &&
         squareRowIndex < rowRange[1] &&
-        squares[i].childElementCount > 0
+        piecesPosition.find((piece) => piece.position === squares[i])
       ) {
-        squaresBetween.push(squares[i]);
+        piecesBetween.push(squares[i]);
       }
     }
     return (
       (actualPosition.row === destination.row ||
         actualPosition.column === destination.column) &&
-      squaresBetween.length === 0 &&
+      piecesBetween.length === 0 &&
       !allPieces.find(
         (piece) =>
           piece.element === squareToGo.children[0] &&
@@ -519,14 +520,18 @@ function handleSquareClick(e) {
   } else if (squareSelected && e.target.nodeName === "IMG") {
     allPieces
       .find((piece) => piece.element === squareSelected.children[0])
-      .attack(e.target.parentElement, e.target.parentElement.parentElement);
+      .attack(
+        e.target.parentElement,
+        e.target.parentElement.parentElement,
+        allPieces
+      );
     whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
     blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
     game.getStatusOfTheGame();
   } else if (squareSelected && e.target !== squareSelected) {
     allPieces
       .find((piece) => piece.element === squareSelected.children[0])
-      .moveTo(e.target);
+      .moveTo(e.target, allPieces);
     whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
     blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
     game.getStatusOfTheGame();
@@ -596,16 +601,19 @@ function colorPossibleMoves(piece) {
     if (
       piece.name === "pawns" &&
       !!squares[i].children.length &&
-      piece.isAuthorizedMove(squares[i], true)
+      piece.isAuthorizedMove(squares[i], allPieces, true)
     ) {
       squares[i].classList.add("possible-move");
     } else if (
       piece.name === "pawns" &&
       !squares[i].children.length &&
-      piece.isAuthorizedMove(squares[i], false)
+      piece.isAuthorizedMove(squares[i], allPieces, false)
     ) {
       squares[i].classList.add("possible-move");
-    } else if (piece.name !== "pawns" && piece.isAuthorizedMove(squares[i])) {
+    } else if (
+      piece.name !== "pawns" &&
+      piece.isAuthorizedMove(squares[i], allPieces)
+    ) {
       squares[i].classList.add("possible-move");
     }
   }
