@@ -33,6 +33,7 @@ class Game {
               .find((possibleMove) => possibleMove === piece.position)
         )
     );
+
     if (
       kingAttacked &&
       (kingAttacked.getAllPossibleMoves(allPieces).length > 0 ||
@@ -58,7 +59,8 @@ class Game {
           const newPiece = {
             ...piece,
             team: piece.team(),
-            allPossibleMoves: piece.getAllPossibleMoves(allPieces),
+            isAuthorizedMove: (square, piecesPosition) =>
+              piece.isAuthorizedMove(square, piecesPosition),
           };
           if (piece === teamMate) {
             newPiece.position = possibleMove;
@@ -71,15 +73,9 @@ class Game {
             allPiecesWithSimulatedMove.find(
               (otherPiece) =>
                 piece.team !== otherPiece.team &&
-                !allPiecesWithSimulatedMove.find(
-                  (simulatedTeamMate) =>
-                    simulatedTeamMate.name !== "kings" &&
-                    otherPiece.allPossibleMoves.includes(
-                      simulatedTeamMate.position
-                    )
-                ) &&
-                !!otherPiece.allPossibleMoves.find(
-                  (possibleMove) => possibleMove === piece.position
+                otherPiece.isAuthorizedMove(
+                  piece.position,
+                  allPiecesWithSimulatedMove
                 )
             )
         );
@@ -133,7 +129,8 @@ class Piece {
     initialPositions[this.index].append(this.element);
     this.position = initialPositions[this.index];
   }
-  attack(elementAttacked, squareToGo, attacking) {
+
+  attack(elementAttacked, squareToGo, piecesPosition, attacking) {
     const pieceAttacked = allPieces.find(
       (piece) => piece.element === elementAttacked
     );
@@ -146,9 +143,10 @@ class Piece {
           : document.querySelectorAll("div.lost-pieces-zone.black")[0];
       pieceAttacked.position = lostPiecesZone;
       lostPiecesZone.append(pieceAttacked.element);
-      this.moveTo(squareToGo, attacking);
+      this.moveTo(squareToGo, piecesPosition, attacking);
     }
   }
+
   moveTo(squareToGo, piecesPosition, attacking) {
     if (this.isAuthorizedMove(squareToGo, piecesPosition, attacking)) {
       squareToGo.append(this.element);
@@ -351,8 +349,8 @@ class Pawn extends Piece {
         authorizedBlackAttack)
     );
   }
-  attack(elementAttacked, squareToGo) {
-    super.attack(elementAttacked, squareToGo, true);
+  attack(elementAttacked, squareToGo, piecesPosition) {
+    super.attack(elementAttacked, squareToGo, piecesPosition, true);
   }
 }
 
