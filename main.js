@@ -335,6 +335,28 @@ class Pawn extends Piece {
       this.team() === "black" &&
       destination.row - actualPosition.row === 1 &&
       Math.abs(destination.column - actualPosition.column) === 1;
+    const piecesBetween = [];
+    if (authorizedWhiteSpecialMove || authorizedBlackSpecialMove) {
+      for (let i = 0; i < squares.length; i++) {
+        const squareRowIndex = indexInClass(rows, squares[i].parentElement);
+        const squareColumnIndex = indexInClass(
+          squares[i].parentElement.children,
+          squares[i]
+        );
+        const rowRange = [actualPosition.row, destination.row].sort(
+          (a, b) => a - b
+        );
+        if (
+          destination.column === actualPosition.column &&
+          squareColumnIndex === actualPosition.column &&
+          squareRowIndex > rowRange[0] &&
+          squareRowIndex < rowRange[1] &&
+          piecesPosition.find((piece) => piece.position === squares[i])
+        ) {
+          piecesBetween.push(squares[i]);
+        }
+      }
+    }
     return (
       !allPieces.find(
         (piece) =>
@@ -342,10 +364,10 @@ class Pawn extends Piece {
           piece.team() === this.team()
       ) &&
       (authorizedWhiteMove ||
-        authorizedWhiteSpecialMove ||
+        (authorizedWhiteSpecialMove && piecesBetween.length === 0) ||
         authorizedWhiteAttack ||
         authorizedBlackMove ||
-        authorizedBlackSpecialMove ||
+        (authorizedBlackSpecialMove && piecesBetween.length === 0) ||
         authorizedBlackAttack)
     );
   }
