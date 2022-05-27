@@ -148,7 +148,10 @@ class Piece {
   }
 
   moveTo(squareToGo, piecesPosition, attacking) {
-    if (this.isAuthorizedMove(squareToGo, piecesPosition, attacking)) {
+    if (
+      !willKingBeAttacked(this, squareToGo) &&
+      this.isAuthorizedMove(squareToGo, piecesPosition, attacking)
+    ) {
       squareToGo.append(this.element);
       this.position = squareToGo;
       this.firstMove = false;
@@ -637,4 +640,33 @@ function colorPossibleMoves(piece) {
       squares[i].classList.add("possible-move");
     }
   }
+}
+
+function simulateMove(pieceToModify, positionToSimulate) {
+  const allPiecesWithSimulatedMove = [...allPieces].map((piece) => {
+    const newPiece = {
+      ...piece,
+      team: () => piece.team(),
+      isAuthorizedMove: (square, piecesPosition) =>
+        piece.isAuthorizedMove(square, piecesPosition),
+    };
+    if (piece === pieceToModify) {
+      newPiece.position = positionToSimulate;
+    }
+    return newPiece;
+  });
+  return allPiecesWithSimulatedMove;
+}
+
+function willKingBeAttacked(pieceToModify, positionToSimulate) {
+  return simulateMove(pieceToModify, positionToSimulate).find(
+    (piece, index, array) =>
+      piece.name === "kings" &&
+      piece.team() === pieceToModify.team() &&
+      array.find(
+        (ennemyPiece) =>
+          ennemyPiece.team() !== piece.team() &&
+          ennemyPiece.isAuthorizedMove(piece.position, array, true)
+      )
+  );
 }
