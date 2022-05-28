@@ -136,7 +136,10 @@ class Piece {
     );
     if (pieceAttacked.team() === this.team()) {
       resetSquareSelected();
-    } else if (this.isAuthorizedMove(squareToGo, piecesPosition, attacking)) {
+    } else if (
+      !willKingBeAttacked(this, squareToGo) &&
+      this.isAuthorizedMove(squareToGo, piecesPosition, attacking)
+    ) {
       const lostPiecesZone =
         pieceAttacked.team() === "white"
           ? document.querySelectorAll("div.lost-pieces-zone.white")[0]
