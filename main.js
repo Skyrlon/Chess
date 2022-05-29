@@ -627,18 +627,21 @@ function colorPossibleMoves(piece) {
     if (
       piece.name === "pawns" &&
       !!squares[i].children.length &&
-      piece.isAuthorizedMove(squares[i], allPieces, true)
+      piece.isAuthorizedMove(squares[i], allPieces, true) &&
+      !willKingBeAttacked(piece, squares[i])
     ) {
       squares[i].classList.add("possible-move");
     } else if (
       piece.name === "pawns" &&
       !squares[i].children.length &&
-      piece.isAuthorizedMove(squares[i], allPieces, false)
+      piece.isAuthorizedMove(squares[i], allPieces, false) &&
+      !willKingBeAttacked(piece, squares[i])
     ) {
       squares[i].classList.add("possible-move");
     } else if (
       piece.name !== "pawns" &&
-      piece.isAuthorizedMove(squares[i], allPieces)
+      piece.isAuthorizedMove(squares[i], allPieces) &&
+      !willKingBeAttacked(piece, squares[i])
     ) {
       squares[i].classList.add("possible-move");
     }
