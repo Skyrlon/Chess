@@ -118,6 +118,16 @@ class Piece {
     return this.index >= this.numberOfPieces / 2 ? "white" : "black";
   }
 
+  isLegalMove(previousRequirements, squareToGo) {
+    return (
+      previousRequirements &&
+      !willKingBeAttacked(this, squareToGo) &&
+      !allPieces.find(
+        (piece) => piece.position === squareToGo && piece.team() === this.team()
+      )
+    );
+  }
+
   getAllPossibleMoves(piecesPosition) {
     const allPossibleMoves = [...squares].filter((square) =>
       this.isAuthorizedMove(square, piecesPosition)
@@ -204,15 +214,11 @@ class Bishop extends Piece {
       }
     }
 
-    return (
+    return super.isLegalMove(
       Math.abs(actualPosition.row - destination.row) ===
         Math.abs(actualPosition.column - destination.column) &&
-      piecesBetween.length === 0 &&
-      !allPieces.find(
-        (piece) =>
-          piece.element === squareToGo.children[0] &&
-          piece.team() === this.team()
-      )
+        piecesBetween.length === 0,
+      squareToGo
     );
   }
 }
@@ -230,19 +236,15 @@ class King extends Piece {
       row: indexInClass(rows, squareToGo.parentElement),
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
-    return (
+    return super.isLegalMove(
       Math.abs(actualPosition.row - destination.row) < 2 &&
-      Math.abs(actualPosition.column - destination.column) < 2 &&
-      !allPieces.find(
-        (piece) =>
-          piece.element === squareToGo.children[0] &&
-          piece.team() === this.team()
-      ) &&
-      !allPieces.find(
-        (piece) =>
-          piece.team() !== this.team() &&
-          piece.isAuthorizedMove(squareToGo, piecesPosition)
-      )
+        Math.abs(actualPosition.column - destination.column) < 2 &&
+        !allPieces.find(
+          (piece) =>
+            piece.team() !== this.team() &&
+            piece.isAuthorizedMove(squareToGo, piecesPosition)
+        ),
+      squareToGo
     );
   }
 }
@@ -260,16 +262,12 @@ class Knight extends Piece {
       row: indexInClass(rows, squareToGo.parentElement),
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
-    return (
-      !allPieces.find(
-        (piece) =>
-          piece.element === squareToGo.children[0] &&
-          piece.team() === this.team()
-      ) &&
-      ((Math.abs(actualPosition.row - destination.row) === 2 &&
+    return super.isLegalMove(
+      (Math.abs(actualPosition.row - destination.row) === 2 &&
         Math.abs(actualPosition.column - destination.column) === 1) ||
         (Math.abs(actualPosition.row - destination.row) === 1 &&
-          Math.abs(actualPosition.column - destination.column) === 2))
+          Math.abs(actualPosition.column - destination.column) === 2),
+      squareToGo
     );
   }
 }
@@ -363,18 +361,14 @@ class Pawn extends Piece {
         }
       }
     }
-    return (
-      !allPieces.find(
-        (piece) =>
-          piece.element === squareToGo.children[0] &&
-          piece.team() === this.team()
-      ) &&
-      (authorizedWhiteMove ||
+    return super.isLegalMove(
+      authorizedWhiteMove ||
         (authorizedWhiteSpecialMove && piecesBetween.length === 0) ||
         authorizedWhiteAttack ||
         authorizedBlackMove ||
         (authorizedBlackSpecialMove && piecesBetween.length === 0) ||
-        authorizedBlackAttack)
+        authorizedBlackAttack,
+      squareToGo
     );
   }
   attack(elementAttacked, squareToGo, piecesPosition) {
@@ -438,17 +432,13 @@ class Queen extends Piece {
         piecesBetween.push(squares[i]);
       }
     }
-    return (
+    return super.isLegalMove(
       piecesBetween.length === 0 &&
-      !allPieces.find(
-        (piece) =>
-          piece.element === squareToGo.children[0] &&
-          piece.team() === this.team()
-      ) &&
-      (Math.abs(actualPosition.row - destination.row) ===
-        Math.abs(actualPosition.column - destination.column) ||
-        actualPosition.row === destination.row ||
-        actualPosition.column === destination.column)
+        (Math.abs(actualPosition.row - destination.row) ===
+          Math.abs(actualPosition.column - destination.column) ||
+          actualPosition.row === destination.row ||
+          actualPosition.column === destination.column),
+      squareToGo
     );
   }
 }
@@ -498,15 +488,11 @@ class Rook extends Piece {
         piecesBetween.push(squares[i]);
       }
     }
-    return (
+    return super.isLegalMove(
       (actualPosition.row === destination.row ||
         actualPosition.column === destination.column) &&
-      piecesBetween.length === 0 &&
-      !allPieces.find(
-        (piece) =>
-          piece.element === squareToGo.children[0] &&
-          piece.team() === this.team()
-      )
+        piecesBetween.length === 0,
+      squareToGo
     );
   }
 }
@@ -627,21 +613,18 @@ function colorPossibleMoves(piece) {
     if (
       piece.name === "pawns" &&
       !!squares[i].children.length &&
-      piece.isAuthorizedMove(squares[i], allPieces, true) &&
-      !willKingBeAttacked(piece, squares[i])
+      piece.isAuthorizedMove(squares[i], allPieces, true)
     ) {
       squares[i].classList.add("possible-move");
     } else if (
       piece.name === "pawns" &&
       !squares[i].children.length &&
-      piece.isAuthorizedMove(squares[i], allPieces, false) &&
-      !willKingBeAttacked(piece, squares[i])
+      piece.isAuthorizedMove(squares[i], allPieces, false)
     ) {
       squares[i].classList.add("possible-move");
     } else if (
       piece.name !== "pawns" &&
-      piece.isAuthorizedMove(squares[i], allPieces) &&
-      !willKingBeAttacked(piece, squares[i])
+      piece.isAuthorizedMove(squares[i], allPieces)
     ) {
       squares[i].classList.add("possible-move");
     }
