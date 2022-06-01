@@ -140,10 +140,7 @@ class Piece {
     this.position = initialPositions[this.index];
   }
 
-  attack(elementAttacked, squareToGo, piecesPosition, attacking) {
-    const pieceAttacked = allPieces.find(
-      (piece) => piece.element === elementAttacked
-    );
+  attack(pieceAttacked, squareToGo, piecesPosition, attacking) {
     if (pieceAttacked.team() === this.team()) {
       resetSquareSelected();
     } else if (
@@ -371,8 +368,8 @@ class Pawn extends Piece {
       squareToGo
     );
   }
-  attack(elementAttacked, squareToGo, piecesPosition) {
-    super.attack(elementAttacked, squareToGo, piecesPosition, true);
+  attack(pieceAttacked, squareToGo, piecesPosition) {
+    super.attack(pieceAttacked, squareToGo, piecesPosition, true);
   }
 }
 
@@ -529,20 +526,23 @@ function handleSquareClick(e) {
     );
   } else if (squareSelected && e.currentTarget === squareSelected) {
     resetSquareSelected();
-  } else if (squareSelected && e.target.nodeName === "IMG") {
+  } else if (
+    squareSelected &&
+    allPieces.find((piece) => piece.position === e.currentTarget)
+  ) {
     allPieces
-      .find((piece) => piece.element === squareSelected.children[0])
+      .find((piece) => piece.position === squareSelected)
       .attack(
-        e.target.parentElement,
-        e.target.parentElement.parentElement,
+        allPieces.find((piece) => piece.position === e.currentTarget),
+        e.currentTarget,
         allPieces
       );
     whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
     blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
     game.getStatusOfTheGame();
-  } else if (squareSelected && e.target !== squareSelected) {
+  } else if (squareSelected && e.currentTarget !== squareSelected) {
     allPieces
-      .find((piece) => piece.element === squareSelected.children[0])
+      .find((piece) => piece.position === squareSelected)
       .moveTo(e.target, allPieces);
     whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
     blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
