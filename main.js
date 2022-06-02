@@ -165,6 +165,8 @@ class Piece {
       squareToGo.append(this.element);
       this.position = squareToGo;
       this.firstMove = false;
+      whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
+      blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
       resetSquareSelected();
     } else {
       resetSquareSelected();
@@ -537,15 +539,11 @@ function handleSquareClick(e) {
         e.currentTarget,
         allPieces
       );
-    whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
-    blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
     game.getStatusOfTheGame();
   } else if (squareSelected && e.currentTarget !== squareSelected) {
     allPieces
       .find((piece) => piece.position === squareSelected)
       .moveTo(e.target, allPieces);
-    whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
-    blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
     game.getStatusOfTheGame();
   }
 }
