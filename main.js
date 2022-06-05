@@ -1,10 +1,12 @@
 const startButton = document.getElementById("start-button");
+const playerTurnDiv = document.getElementsByClassName("player-turn")[0];
 
 startButton.addEventListener("click", function () {
   startButton.classList.add("game-started");
   whitePlayer.isTheirTurn = true;
   blackPlayer.isTheirTurn = false;
   game.statusOfTheGame = "on going";
+  playerTurnDiv.classList.add("white");
   createBoard();
   createPieces();
   placePieces();
@@ -21,6 +23,20 @@ class Game {
   constructor(statusOfTheGame) {
     this.statusOfTheGame = statusOfTheGame;
   }
+
+  endOfTurn() {
+    whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
+    blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
+    if (whitePlayer.isTheirTurn) {
+      playerTurnDiv.classList.add("white");
+      playerTurnDiv.classList.remove("black");
+    } else {
+      playerTurnDiv.classList.add("black");
+      playerTurnDiv.classList.remove("white");
+    }
+    resetSquareSelected();
+  }
+
   getStatusOfTheGame() {
     const kingAttacked = allPieces.find(
       (piece) =>
@@ -165,9 +181,7 @@ class Piece {
       squareToGo.append(this.element);
       this.position = squareToGo;
       this.firstMove = false;
-      whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
-      blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
-      resetSquareSelected();
+      game.endOfTurn();
     } else {
       resetSquareSelected();
     }

@@ -83,3 +83,32 @@ img {
 #start-button.game-started {
   display: none;
 }
+
+.player-turn {
+  position: absolute;
+}
+
+.player-turn.white {
+  top: 5%;
+}
+
+.player-turn.black {
+  position: absolute;
+  bottom: 5%;
+}
+
+.player-turn-black-text {
+  display: none;
+}
+
+.player-turn-white-text {
+  display: none;
+}
+
+.player-turn.white .player-turn-white-text {
+  display: block;
+}
+
+.player-turn.black .player-turn-black-text {
+  display: block;
+}
