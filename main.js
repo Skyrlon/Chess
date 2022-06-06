@@ -70,33 +70,9 @@ class Game {
       (piece) => piece.team() === kingAttacked?.team()
     );
     const canOneTeamMateProtectKing = kingAttackedTeamMates.find((teamMate) => {
-      return teamMate.getAllPossibleMoves(allPieces).find((possibleMove) => {
-        const allPiecesWithSimulatedMove = [...allPieces].map((piece) => {
-          const newPiece = {
-            ...piece,
-            team: piece.team(),
-            isAuthorizedMove: (square, piecesPosition) =>
-              piece.isAuthorizedMove(square, piecesPosition),
-          };
-          if (piece === teamMate) {
-            newPiece.position = possibleMove;
-          }
-          return newPiece;
-        });
-        const foundKingAttacked = allPiecesWithSimulatedMove.find(
-          (piece) =>
-            piece.name === "kings" &&
-            allPiecesWithSimulatedMove.find(
-              (otherPiece) =>
-                piece.team !== otherPiece.team &&
-                otherPiece.isAuthorizedMove(
-                  piece.position,
-                  allPiecesWithSimulatedMove
-                )
-            )
-        );
-        return !foundKingAttacked;
-      });
+      return teamMate
+        .getAllPossibleMoves(allPieces)
+        .find((possibleMove) => !willKingBeAttacked(teamMate, possibleMove));
     });
 
     return canOneTeamMateProtectKing;
@@ -644,7 +620,7 @@ function colorPossibleMoves(piece) {
 }
 
 function simulateMove(pieceToModify, positionToSimulate) {
-  const allPiecesWithSimulatedMove = [...allPieces].map((piece) => {
+  let allPiecesWithSimulatedMove = [...allPieces].map((piece) => {
     const newPiece = {
       ...piece,
       team: () => piece.team(),
@@ -655,6 +631,15 @@ function simulateMove(pieceToModify, positionToSimulate) {
       newPiece.position = positionToSimulate;
     }
     return newPiece;
+  });
+  allPiecesWithSimulatedMove = allPiecesWithSimulatedMove.map((piece) => {
+    if (
+      piece.team() !== pieceToModify.team() &&
+      piece.position === positionToSimulate
+    ) {
+      return { ...piece, position: false, isAuthorizedMove: () => false };
+    }
+    return piece;
   });
   return allPiecesWithSimulatedMove;
 }
