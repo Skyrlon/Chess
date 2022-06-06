@@ -39,6 +39,11 @@ body {
   border: 2px solid green;
 }
 
+.squares.selected.cant-move {
+  box-sizing: border-box;
+  border: 2px solid red;
+}
+
 .rows:nth-child(odd) .squares:nth-child(odd),
 .rows:nth-child(even) .squares:nth-child(even) {
   background: #ffcf9f;

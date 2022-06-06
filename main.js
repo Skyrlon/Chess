@@ -1,5 +1,11 @@
 const startButton = document.getElementById("start-button");
 const playerTurnDiv = document.getElementsByClassName("player-turn")[0];
+const whiteGraveyard = document.querySelectorAll(
+  "div.lost-pieces-zone.white"
+)[0];
+const blackGraveyard = document.querySelectorAll(
+  "div.lost-pieces-zone.black"
+)[0];
 
 startButton.addEventListener("click", function () {
   startButton.classList.add("game-started");
@@ -140,9 +146,7 @@ class Piece {
       this.isAuthorizedMove(squareToGo, piecesPosition, attacking)
     ) {
       const lostPiecesZone =
-        pieceAttacked.team() === "white"
-          ? document.querySelectorAll("div.lost-pieces-zone.white")[0]
-          : document.querySelectorAll("div.lost-pieces-zone.black")[0];
+        pieceAttacked.team() === "white" ? whiteGraveyard : blackGraveyard;
       pieceAttacked.position = lostPiecesZone;
       lostPiecesZone.append(pieceAttacked.element);
       this.moveTo(squareToGo, piecesPosition, attacking);
@@ -512,6 +516,11 @@ function handleSquareClick(e) {
     )
   ) {
     e.currentTarget.classList.add("selected");
+    allPieces
+      .find((piece) => piece.position === e.currentTarget)
+      .getAllPossibleMoves(allPieces).length === 0
+      ? e.currentTarget.classList.add("cant-move")
+      : "";
     squareSelected = e.currentTarget;
     colorPossibleMoves(
       allPieces.find((piece) => piece.position === e.currentTarget)
@@ -587,7 +596,8 @@ function placePieces() {
 }
 
 function resetSquareSelected() {
-  squareSelected.classList.toggle("selected");
+  squareSelected.classList.remove("selected");
+  squareSelected.classList.remove("cant-move");
   squareSelected = null;
   for (let i = 0; i < squares.length; i++) {
     squares[i].classList.remove("possible-move");
