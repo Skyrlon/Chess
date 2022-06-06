@@ -34,6 +34,7 @@ class Game {
       playerTurnDiv.classList.add("black");
       playerTurnDiv.classList.remove("white");
     }
+    this.getStatusOfTheGame();
     resetSquareSelected();
   }
 
@@ -49,7 +50,6 @@ class Game {
               .find((possibleMove) => possibleMove === piece.position)
         )
     );
-
     if (
       kingAttacked &&
       (kingAttacked.getAllPossibleMoves(allPieces).length > 0 ||
@@ -529,12 +529,10 @@ function handleSquareClick(e) {
         e.currentTarget,
         allPieces
       );
-    game.getStatusOfTheGame();
   } else if (squareSelected && e.currentTarget !== squareSelected) {
     allPieces
       .find((piece) => piece.position === squareSelected)
       .moveTo(e.target, allPieces);
-    game.getStatusOfTheGame();
   }
 }
 
@@ -624,8 +622,8 @@ function simulateMove(pieceToModify, positionToSimulate) {
     const newPiece = {
       ...piece,
       team: () => piece.team(),
-      isAuthorizedMove: (square, piecesPosition) =>
-        piece.isAuthorizedMove(square, piecesPosition),
+      isAuthorizedMove: (square, piecesPosition, attacking) =>
+        piece.isAuthorizedMove(square, piecesPosition, attacking),
     };
     if (piece === pieceToModify) {
       newPiece.position = positionToSimulate;
