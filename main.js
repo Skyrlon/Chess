@@ -56,6 +56,12 @@ class Game {
               .find((possibleMove) => possibleMove === piece.position)
         )
     );
+    const teamPlaying = allPieces.filter(
+      (piece) =>
+        piece.team() ===
+          [whitePlayer, blackPlayer].find((player) => player.isTheirTurn)
+            .team && ![whiteGraveyard, blackGraveyard].includes(piece.position)
+    );
     if (
       kingAttacked &&
       (kingAttacked.getAllPossibleMoves(allPieces).length > 0 ||
@@ -68,6 +74,13 @@ class Game {
       !this.canTeamPreventCheckMate(kingAttacked)
     ) {
       alert(`${kingAttacked.team()} king is in checkmate`);
+    } else if (
+      !kingAttacked &&
+      !teamPlaying.find(
+        (piece) => piece.getAllPossibleMoves(allPieces).length > 0
+      )
+    ) {
+      alert("Stalemate");
     }
   }
 
