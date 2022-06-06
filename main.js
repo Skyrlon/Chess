@@ -138,25 +138,28 @@ class Piece {
     this.position = initialPositions[this.index];
   }
 
-  attack(pieceAttacked, squareToGo, piecesPosition, attacking) {
+  attack(pieceAttacked, squareToGo, piecesPosition) {
     if (pieceAttacked.team() === this.team()) {
       resetSquareSelected();
     } else if (
       !willKingBeAttacked(this, squareToGo) &&
-      this.isAuthorizedMove(squareToGo, piecesPosition, attacking)
+      this.isAuthorizedMove(squareToGo, piecesPosition)
     ) {
       const lostPiecesZone =
         pieceAttacked.team() === "white" ? whiteGraveyard : blackGraveyard;
       pieceAttacked.position = lostPiecesZone;
+      squareToGo.append(this.element);
       lostPiecesZone.append(pieceAttacked.element);
-      this.moveTo(squareToGo, piecesPosition, attacking);
+      this.position = squareToGo;
+      this.firstMove = false;
+      game.endOfTurn();
     }
   }
 
-  moveTo(squareToGo, piecesPosition, attacking) {
+  moveTo(squareToGo, piecesPosition) {
     if (
       !willKingBeAttacked(this, squareToGo) &&
-      this.isAuthorizedMove(squareToGo, piecesPosition, attacking)
+      this.isAuthorizedMove(squareToGo, piecesPosition)
     ) {
       squareToGo.append(this.element);
       this.position = squareToGo;
@@ -291,7 +294,7 @@ class Pawn extends Piece {
       squares[55],
     ]);
   }
-  isAuthorizedMove(squareToGo, piecesPosition, attacking) {
+  isAuthorizedMove(squareToGo, piecesPosition) {
     const actualPosition = {
       row: indexInClass(rows, this.position.parentElement),
       column: indexInClass(this.position.parentElement.children, this.position),
@@ -300,35 +303,38 @@ class Pawn extends Piece {
       row: indexInClass(rows, squareToGo.parentElement),
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
+    const positionAlreadyTakenByEnnemy = piecesPosition.find(
+      (piece) => piece.team() !== this.team && piece.position === squareToGo
+    );
     const authorizedWhiteMove =
-      !attacking &&
+      !positionAlreadyTakenByEnnemy &&
       this.team() === "white" &&
       destination.row - actualPosition.row === -1 &&
       destination.column === actualPosition.column;
     const authorizedWhiteSpecialMove =
-      !attacking &&
+      !positionAlreadyTakenByEnnemy &&
       this.team() === "white" &&
       this.firstMove &&
       destination.row - actualPosition.row === -2 &&
       destination.column === actualPosition.column;
     const authorizedWhiteAttack =
-      attacking &&
+      positionAlreadyTakenByEnnemy &&
       this.team() === "white" &&
       destination.row - actualPosition.row === -1 &&
       Math.abs(destination.column - actualPosition.column) === 1;
     const authorizedBlackMove =
-      !attacking &&
+      !positionAlreadyTakenByEnnemy &&
       this.team() === "black" &&
       destination.row - actualPosition.row === 1 &&
       destination.column === actualPosition.column;
     const authorizedBlackSpecialMove =
-      !attacking &&
+      !positionAlreadyTakenByEnnemy &&
       this.team() === "black" &&
       this.firstMove &&
       destination.row - actualPosition.row === 2 &&
       destination.column === actualPosition.column;
     const authorizedBlackAttack =
-      attacking &&
+      positionAlreadyTakenByEnnemy &&
       this.team() === "black" &&
       destination.row - actualPosition.row === 1 &&
       Math.abs(destination.column - actualPosition.column) === 1;
@@ -363,9 +369,6 @@ class Pawn extends Piece {
         authorizedBlackAttack,
       squareToGo
     );
-  }
-  attack(pieceAttacked, squareToGo, piecesPosition) {
-    super.attack(pieceAttacked, squareToGo, piecesPosition, true);
   }
 }
 
@@ -606,22 +609,7 @@ function resetSquareSelected() {
 
 function colorPossibleMoves(piece) {
   for (let i = 0; i < squares.length; i++) {
-    if (
-      piece.name === "pawns" &&
-      !!squares[i].children.length &&
-      piece.isAuthorizedMove(squares[i], allPieces, true)
-    ) {
-      squares[i].classList.add("possible-move");
-    } else if (
-      piece.name === "pawns" &&
-      !squares[i].children.length &&
-      piece.isAuthorizedMove(squares[i], allPieces, false)
-    ) {
-      squares[i].classList.add("possible-move");
-    } else if (
-      piece.name !== "pawns" &&
-      piece.isAuthorizedMove(squares[i], allPieces)
-    ) {
+    if (piece.isAuthorizedMove(squares[i], allPieces)) {
       squares[i].classList.add("possible-move");
     }
   }
@@ -632,8 +620,8 @@ function simulateMove(pieceToModify, positionToSimulate) {
     const newPiece = {
       ...piece,
       team: () => piece.team(),
-      isAuthorizedMove: (square, piecesPosition, attacking) =>
-        piece.isAuthorizedMove(square, piecesPosition, attacking),
+      isAuthorizedMove: (square, piecesPosition) =>
+        piece.isAuthorizedMove(square, piecesPosition),
     };
     if (piece === pieceToModify) {
       newPiece.position = positionToSimulate;
