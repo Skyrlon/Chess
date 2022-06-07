@@ -195,10 +195,6 @@ class Piece {
   }
 
   moveTo(squareToGo, piecesPosition) {
-    console.log(
-      !willKingBeAttacked(this, squareToGo),
-      this.isAuthorizedMove(squareToGo, piecesPosition)
-    );
     if (
       !willKingBeAttacked(this, squareToGo) &&
       this.isAuthorizedMove(squareToGo, piecesPosition)
@@ -659,6 +655,8 @@ function simulateMove(pieceToModify, positionToSimulate) {
       team: () => piece.team(),
       isAuthorizedMove: (square, piecesPosition) =>
         piece.isAuthorizedMove(square, piecesPosition),
+      getAllPossibleMoves: (piecesPosition) =>
+        piece.getAllPossibleMoves(piecesPosition),
     };
     if (piece === pieceToModify) {
       newPiece.position = positionToSimulate;
@@ -670,7 +668,11 @@ function simulateMove(pieceToModify, positionToSimulate) {
       piece.team() !== pieceToModify.team() &&
       piece.position === positionToSimulate
     ) {
-      return { ...piece, position: false, isAuthorizedMove: () => false };
+      return {
+        ...piece,
+        position: piece.team() === "white" ? whiteGraveyard : blackGraveyard,
+        isAuthorizedMove: () => false,
+      };
     }
     return piece;
   });
@@ -681,10 +683,10 @@ function willKingBeAttacked(pieceToModify, positionToSimulate) {
   return simulateMove(pieceToModify, positionToSimulate).find(
     (piece, index, array) =>
       piece.name === "kings" &&
-      piece.team() === pieceToModify.team() &&
-      array.find((ennemyPiece) => {
-        ennemyPiece.team() !== piece.team() &&
-          ennemyPiece.isAuthorizedMove(piece.position, array);
-      })
+      array.find(
+        (otherPiece) =>
+          piece.team() !== otherPiece.team() &&
+          otherPiece.isAuthorizedMove(piece.position, array)
+      )
   );
 }
