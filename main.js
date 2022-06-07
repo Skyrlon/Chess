@@ -683,9 +683,11 @@ function willKingBeAttacked(pieceToModify, positionToSimulate) {
   return simulateMove(pieceToModify, positionToSimulate).find(
     (piece, index, array) =>
       piece.name === "kings" &&
+      pieceToModify.team() === piece.team() &&
       array.find(
         (otherPiece) =>
           piece.team() !== otherPiece.team() &&
+          ![whiteGraveyard, blackGraveyard].includes(otherPiece) &&
           otherPiece.isAuthorizedMove(piece.position, array)
       )
   );
