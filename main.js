@@ -62,6 +62,24 @@ class Game {
           [whitePlayer, blackPlayer].find((player) => player.isTheirTurn)
             .team && ![whiteGraveyard, blackGraveyard].includes(piece.position)
     );
+    const allPiecesNotDead = allPieces.filter(
+      (piece) => ![whiteGraveyard, blackGraveyard].includes(piece.position)
+    );
+    const bishopKingVsKingDraw =
+      allPiecesNotDead.length === 3 &&
+      allPieces.find((piece) => piece.name === "bishops");
+    const knightKingVsKingDraw =
+      allPiecesNotDead.length === 3 &&
+      allPiecesNotDead.find((piece) => piece.name === "knights");
+    const bishopKingVsBishopKingDraw =
+      allPiecesNotDead.length === 4 &&
+      allPiecesNotDead.find(
+        (piece, index, array) =>
+          piece.name === "bishops" &&
+          array.find(
+            (otherPiece) => otherPiece !== piece && otherPiece % 2 === piece % 2
+          )
+      );
     if (
       kingAttacked &&
       (kingAttacked.getAllPossibleMoves(allPieces).length > 0 ||
@@ -81,6 +99,13 @@ class Game {
       )
     ) {
       alert("Stalemate");
+    } else if (
+      !kingAttacked &&
+      (bishopKingVsKingDraw ||
+        knightKingVsKingDraw ||
+        bishopKingVsBishopKingDraw)
+    ) {
+      alert("Impossibility of checkmate");
     }
   }
 
@@ -170,6 +195,10 @@ class Piece {
   }
 
   moveTo(squareToGo, piecesPosition) {
+    console.log(
+      !willKingBeAttacked(this, squareToGo),
+      this.isAuthorizedMove(squareToGo, piecesPosition)
+    );
     if (
       !willKingBeAttacked(this, squareToGo) &&
       this.isAuthorizedMove(squareToGo, piecesPosition)
@@ -247,12 +276,7 @@ class King extends Piece {
     };
     return super.isLegalMove(
       Math.abs(actualPosition.row - destination.row) < 2 &&
-        Math.abs(actualPosition.column - destination.column) < 2 &&
-        !allPieces.find(
-          (piece) =>
-            piece.team() !== this.team() &&
-            piece.isAuthorizedMove(squareToGo, piecesPosition)
-        ),
+        Math.abs(actualPosition.column - destination.column) < 2,
       squareToGo
     );
   }
@@ -262,7 +286,7 @@ class Knight extends Piece {
   resetPosition() {
     super.resetPosition([squares[1], squares[6], squares[57], squares[62]]);
   }
-  isAuthorizedMove(squareToGo) {
+  isAuthorizedMove(squareToGo, piecesPosition) {
     const actualPosition = {
       row: indexInClass(rows, this.position.parentElement),
       column: indexInClass(this.position.parentElement.children, this.position),
@@ -317,7 +341,7 @@ class Pawn extends Piece {
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
     const positionAlreadyTakenByEnnemy = piecesPosition.find(
-      (piece) => piece.team() !== this.team && piece.position === squareToGo
+      (piece) => piece.team() !== this.team() && piece.position === squareToGo
     );
     const authorizedWhiteMove =
       !positionAlreadyTakenByEnnemy &&
@@ -658,10 +682,9 @@ function willKingBeAttacked(pieceToModify, positionToSimulate) {
     (piece, index, array) =>
       piece.name === "kings" &&
       piece.team() === pieceToModify.team() &&
-      array.find(
-        (ennemyPiece) =>
-          ennemyPiece.team() !== piece.team() &&
-          ennemyPiece.isAuthorizedMove(piece.position, array, true)
-      )
+      array.find((ennemyPiece) => {
+        ennemyPiece.team() !== piece.team() &&
+          ennemyPiece.isAuthorizedMove(piece.position, array);
+      })
   );
 }
