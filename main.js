@@ -155,13 +155,7 @@ class Piece {
   }
 
   isLegalMove(previousRequirements, squareToGo) {
-    return (
-      previousRequirements &&
-      !willKingBeAttacked(this, squareToGo) &&
-      !allPieces.find(
-        (piece) => piece.position === squareToGo && piece.team() === this.team()
-      )
-    );
+    return previousRequirements && !willKingBeAttacked(this, squareToGo);
   }
 
   getAllPossibleMoves(piecesPosition) {
@@ -270,6 +264,7 @@ class King extends Piece {
       row: indexInClass(rows, squareToGo.parentElement),
       column: indexInClass(squareToGo.parentElement.children, squareToGo),
     };
+
     return super.isLegalMove(
       Math.abs(actualPosition.row - destination.row) < 2 &&
         Math.abs(actualPosition.column - destination.column) < 2,
@@ -655,8 +650,6 @@ function simulateMove(pieceToModify, positionToSimulate) {
       team: () => piece.team(),
       isAuthorizedMove: (square, piecesPosition) =>
         piece.isAuthorizedMove(square, piecesPosition),
-      getAllPossibleMoves: (piecesPosition) =>
-        piece.getAllPossibleMoves(piecesPosition),
     };
     if (piece === pieceToModify) {
       newPiece.position = positionToSimulate;
