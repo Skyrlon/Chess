@@ -635,9 +635,15 @@ function resetSquareSelected() {
   }
 }
 
-function colorPossibleMoves(piece) {
+function colorPossibleMoves(pieceSelected) {
   for (let i = 0; i < squares.length; i++) {
-    if (piece.isAuthorizedMove(squares[i], allPieces)) {
+    if (
+      pieceSelected.isAuthorizedMove(squares[i], allPieces) &&
+      !allPieces.find(
+        (piece) =>
+          piece.team() === pieceSelected.team() && piece.position === squares[i]
+      )
+    ) {
       squares[i].classList.add("possible-move");
     }
   }
