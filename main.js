@@ -572,7 +572,7 @@ function handleSquareClick(e) {
   } else if (squareSelected && e.currentTarget !== squareSelected) {
     allPieces
       .find((piece) => piece.position === squareSelected)
-      .moveTo(e.target, allPieces);
+      .moveTo(e.currentTarget, allPieces);
   }
 }
 
@@ -630,9 +630,8 @@ function resetSquareSelected() {
   squareSelected.classList.remove("selected");
   squareSelected.classList.remove("cant-move");
   squareSelected = null;
-  for (let i = 0; i < squares.length; i++) {
-    squares[i].classList.remove("possible-move");
-  }
+  const allPossibleMovesElements = document.querySelectorAll(".possible-moves");
+  allPossibleMovesElements.forEach((possibleMove) => possibleMove.remove());
 }
 
 function colorPossibleMoves(pieceSelected) {
@@ -644,7 +643,9 @@ function colorPossibleMoves(pieceSelected) {
           piece.team() === pieceSelected.team() && piece.position === squares[i]
       )
     ) {
-      squares[i].classList.add("possible-move");
+      const possibleMove = document.createElement("div");
+      possibleMove.classList.add("possible-moves");
+      squares[i].prepend(possibleMove);
     }
   }
 }

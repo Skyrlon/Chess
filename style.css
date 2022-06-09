@@ -6,7 +6,7 @@ body {
 }
 
 :root {
-  --squares-size: 5rem;
+  --squares-size: 6rem;
 }
 
 body {
@@ -30,6 +30,7 @@ body {
 }
 
 .squares {
+  position: relative;
   width: var(--squares-size);
   height: var(--squares-size);
 }
@@ -54,12 +55,20 @@ body {
   background: #d28c45;
 }
 
-#board .rows .squares.possible-move {
+.possible-moves {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: calc(var(--squares-size) * 0.5);
+  height: calc(var(--squares-size) * 0.5);
   background-color: green;
+  animation: zomin-zoomout 1s infinite alternate ease-in-out;
 }
 
 .pieces,
 img {
+  position: absolute;
   width: var(--squares-size);
   height: var(--squares-size);
 }
@@ -121,4 +130,13 @@ img {
 
 .player-turn.black .player-turn-black-text {
   display: block;
+}
+
+@keyframes zomin-zoomout {
+  from {
+    transform: translateX(-50%) translateY(-50%) scale(1);
+  }
+  to {
+    transform: translateX(-50%) translateY(-50%) scale(0.75);
+  }
 }
