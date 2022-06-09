@@ -6,7 +6,7 @@ body {
 }
 
 :root {
-  --squares-size: 7rem;
+  --squares-size: 5rem;
 }
 
 body {
@@ -35,13 +35,21 @@ body {
   height: var(--squares-size);
 }
 
-.squares.selected {
+.border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
+}
+
+.squares.selected .border {
+  position: absolute;
   border: 0.4rem solid green;
 }
 
-.squares.selected.cant-move {
-  box-sizing: border-box;
+.squares.selected.cant-move .border {
   border: 0.4rem solid red;
 }
 
@@ -67,10 +75,6 @@ body {
 
 .pieces,
 img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
   width: var(--squares-size);
   height: var(--squares-size);
 }
@@ -83,6 +87,7 @@ img {
 }
 
 .lost-pieces-zone {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   width: calc(var(--squares-size) * 4);

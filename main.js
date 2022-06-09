@@ -630,8 +630,10 @@ function resetSquareSelected() {
   squareSelected.classList.remove("selected");
   squareSelected.classList.remove("cant-move");
   squareSelected = null;
-  const allPossibleMovesElements = document.querySelectorAll(".possible-moves");
-  allPossibleMovesElements.forEach((possibleMove) => possibleMove.remove());
+  document
+    .querySelectorAll(".possible-moves")
+    .forEach((possibleMove) => possibleMove.remove());
+  document.querySelectorAll(".border").forEach((border) => border.remove());
 }
 
 function colorPossibleMoves(pieceSelected) {
@@ -651,6 +653,9 @@ function colorPossibleMoves(pieceSelected) {
   const allPossibleMovesElements = document.querySelectorAll(".possible-moves");
   if (allPossibleMovesElements.length === 0)
     pieceSelected.position.classList.add("cant-move");
+  const border = document.createElement("div");
+  border.classList.add("border");
+  pieceSelected.position.append(border);
 }
 
 function simulateMove(pieceToModify, positionToSimulate) {
