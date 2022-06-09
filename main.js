@@ -648,6 +648,9 @@ function colorPossibleMoves(pieceSelected) {
       squares[i].prepend(possibleMove);
     }
   }
+  const allPossibleMovesElements = document.querySelectorAll(".possible-moves");
+  if (allPossibleMovesElements.length === 0)
+    pieceSelected.position.classList.add("cant-move");
 }
 
 function simulateMove(pieceToModify, positionToSimulate) {

@@ -6,7 +6,7 @@ body {
 }
 
 :root {
-  --squares-size: 6rem;
+  --squares-size: 7rem;
 }
 
 body {
@@ -37,12 +37,12 @@ body {
 
 .squares.selected {
   box-sizing: border-box;
-  border: 2px solid green;
+  border: 0.4rem solid green;
 }
 
 .squares.selected.cant-move {
   box-sizing: border-box;
-  border: 2px solid red;
+  border: 0.4rem solid red;
 }
 
 .rows:nth-child(odd) .squares:nth-child(odd),
@@ -59,7 +59,6 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translateX(-50%) translateY(-50%);
   width: calc(var(--squares-size) * 0.5);
   height: calc(var(--squares-size) * 0.5);
   background-color: green;
@@ -69,6 +68,9 @@ body {
 .pieces,
 img {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
   width: var(--squares-size);
   height: var(--squares-size);
 }
