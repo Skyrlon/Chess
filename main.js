@@ -146,10 +146,11 @@ function indexInClass(collection, node) {
 }
 
 class Piece {
-  constructor(element, index, name) {
+  constructor(element, index, teamIndex, name) {
     this.element = element;
     this.position = null;
     this.index = index;
+    this.teamIndex = teamIndex;
     this.name = name;
   }
 
@@ -621,7 +622,10 @@ function placePieces() {
   piecesObjects.forEach((pieces) => {
     const elements = document.getElementsByClassName(pieces.name);
     for (let i = 0; i < elements.length; i++) {
-      allPieces.push(new pieces.classToUse(elements[i], i, pieces.name));
+      const teamIndex = i < pieces.number / 2 ? i : i - pieces.number / 2;
+      allPieces.push(
+        new pieces.classToUse(elements[i], i, teamIndex, pieces.name)
+      );
     }
   });
 
