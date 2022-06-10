@@ -77,7 +77,11 @@ class Game {
         (piece, index, array) =>
           piece.name === "bishops" &&
           array.find(
-            (otherPiece) => otherPiece !== piece && otherPiece % 2 === piece % 2
+            (otherPiece) =>
+              otherPiece.name === "bishops" &&
+              otherPiece.team() !== piece.team() &&
+              findSquareColor(piece.position) ===
+                findSquareColor(otherPiece.position)
           )
       );
     if (
@@ -697,4 +701,18 @@ function willKingBeAttacked(pieceToModify, positionToSimulate) {
           otherPiece.isAuthorizedMove(piece.position, array)
       )
   );
+}
+
+function findSquareColor(square) {
+  const index = indexInClass(squares, square);
+  const rowIndex = Math.floor(index / 8);
+  const isEven = (number) => number % 2 === 0;
+  if (
+    (isEven(index) && isEven(rowIndex)) ||
+    (!isEven(rowIndex) && !isEven(index))
+  ) {
+    return "clear";
+  } else {
+    return "dark";
+  }
 }
