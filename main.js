@@ -7,6 +7,10 @@ const blackGraveyard = document.querySelectorAll(
   "div.lost-pieces-zone.black"
 )[0];
 
+const promotionMenu = document.getElementsByClassName("promotion-menu")[0];
+
+const promotionPieces = document.querySelectorAll(".promotion-pieces");
+
 startButton.addEventListener("click", function () {
   startButton.classList.add("game-started");
   whitePlayer.isTheirTurn = true;
@@ -177,17 +181,25 @@ class Piece {
   }
 
   attack(pieceAttacked, squareToGo, piecesPosition) {
+    const lostPiecesZone =
+      pieceAttacked.team() === "white" ? whiteGraveyard : blackGraveyard;
     if (pieceAttacked.team() === this.team()) {
       resetSquareSelected();
+    } else if (
+      this.name === "pawns" &&
+      this.isAuthorizedMove(squareToGo, piecesPosition) &&
+      [rows[0], rows[rows.length - 1]].includes(squareToGo.parentElement)
+    ) {
+      pieceAttacked.position = lostPiecesZone;
+      lostPiecesZone.append(pieceAttacked.element);
+      this.pawnPromotion(squareToGo, piecesPosition);
     } else if (
       !willKingBeAttacked(this, squareToGo) &&
       this.isAuthorizedMove(squareToGo, piecesPosition)
     ) {
-      const lostPiecesZone =
-        pieceAttacked.team() === "white" ? whiteGraveyard : blackGraveyard;
       pieceAttacked.position = lostPiecesZone;
-      squareToGo.append(this.element);
       lostPiecesZone.append(pieceAttacked.element);
+      squareToGo.append(this.element);
       this.position = squareToGo;
       this.firstMove = false;
       game.endOfTurn();
@@ -217,12 +229,42 @@ class Piece {
     game.endOfTurn();
   }
 
+  pawnPromotion(squareToGo) {
+    squareToGo.append(this.element);
+    this.position = squareToGo;
+    resetSquareSelected();
+    promotionMenu.classList.add("show", this.team());
+    promotionPieces.forEach((piece) => {
+      piece.addEventListener("click", onPromotionPieceClick);
+      piece.myParam = { pieceToPromote: this, squareToGo };
+    });
+  }
+
+  pawnPromotionEnd(newPiece, squareToGo) {
+    newPiece.position = squareToGo;
+    squareToGo.append(newPiece.element);
+    allPieces.push(newPiece);
+    this.position = this.team() === "white" ? whiteGraveyard : blackGraveyard;
+    this.position.append(this.element);
+    promotionMenu.classList.remove("show", this.team());
+    promotionPieces.forEach((piece) =>
+      piece.removeEventListener("click", onPromotionPieceClick)
+    );
+    game.endOfTurn();
+  }
+
   moveTo(squareToGo, piecesPosition) {
     if (
       this.name === "kings" &&
       this.isAuthorizedCastlingMove(squareToGo, piecesPosition)
     ) {
       this.castlingMoveTo(squareToGo, piecesPosition);
+    } else if (
+      this.name === "pawns" &&
+      this.isAuthorizedMove(squareToGo, piecesPosition) &&
+      [rows[0], rows[rows.length - 1]].includes(squareToGo.parentElement)
+    ) {
+      this.pawnPromotion(squareToGo, piecesPosition);
     } else if (this.isAuthorizedMove(squareToGo, piecesPosition)) {
       squareToGo.append(this.element);
       this.position = squareToGo;
@@ -701,7 +743,7 @@ function placePieces() {
   ];
 
   piecesObjects.forEach((pieces) => {
-    const elements = document.getElementsByClassName(pieces.name);
+    const elements = document.querySelectorAll(`.pieces.${pieces.name}`);
     for (let i = 0; i < elements.length; i++) {
       const teamIndex = i < pieces.number / 2 ? i : i - pieces.number / 2;
       allPieces.push(
@@ -714,8 +756,8 @@ function placePieces() {
 }
 
 function resetSquareSelected() {
-  squareSelected.classList.remove("selected");
-  squareSelected.classList.remove("cant-move");
+  squareSelected?.classList.remove("selected");
+  squareSelected?.classList.remove("cant-move");
   squareSelected = null;
   document
     .querySelectorAll(".possible-moves")
@@ -800,4 +842,79 @@ function findSquareColor(square) {
   } else {
     return "dark";
   }
+}
+
+function onPromotionPieceClick(e) {
+  const pieces = [
+    {
+      name: "bishops",
+      team: "black",
+      classToUse: Bishop,
+      img: "./assets/black_bishop.svg",
+    },
+    {
+      name: "knights",
+      team: "black",
+      classToUse: Knight,
+      img: "./assets/black_knight.svg",
+    },
+    {
+      name: "queens",
+      team: "black",
+      classToUse: Queen,
+      img: "./assets/black_queen.svg",
+    },
+    {
+      name: "rooks",
+      team: "black",
+      classToUse: Rook,
+      img: "./assets/black_rook.svg",
+    },
+    {
+      name: "bishops",
+      team: "white",
+      classToUse: Bishop,
+      img: "./assets/white_bishop.svg",
+    },
+    {
+      name: "knights",
+      team: "white",
+      classToUse: Knight,
+      img: "./assets/white_knight.svg",
+    },
+    {
+      name: "queens",
+      team: "white",
+      classToUse: Queen,
+      img: "./assets/white_queen.svg",
+    },
+    {
+      name: "rooks",
+      team: "white",
+      classToUse: Rook,
+      img: "./assets/white_rook.svg",
+    },
+  ];
+  const pieceChoosen = pieces.find((piece) =>
+    new RegExp(piece.img.slice(1)).test(e.currentTarget.src)
+  );
+  const newPiece = document.createElement("div");
+  newPiece.setAttribute("class", "pieces " + pieceChoosen.name);
+  const img = document.createElement("img");
+  img.setAttribute("src", pieceChoosen.img);
+  newPiece.append(img);
+  board.append(newPiece);
+  const sameNamePieces = allPieces.filter(
+    (piece) => piece.name === pieceChoosen.name
+  );
+  const newPieceClass = new pieceChoosen.classToUse(
+    newPiece,
+    99,
+    sameNamePieces.length,
+    pieceChoosen.name
+  );
+  e.currentTarget.myParam.pieceToPromote.pawnPromotionEnd(
+    newPieceClass,
+    e.currentTarget.myParam.squareToGo
+  );
 }

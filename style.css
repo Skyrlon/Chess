@@ -17,6 +17,7 @@ body {
 }
 
 #board {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -97,6 +98,7 @@ img {
 
 #start-button {
   position: absolute;
+  z-index: 99;
   left: 50%;
   transform: translate(-50%);
   font-size: 5rem;
@@ -138,6 +140,42 @@ img {
 
 .player-turn.black .player-turn-black-text {
   display: block;
+}
+
+.promotion-menu {
+  display: none;
+}
+
+.promotion-menu.show {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.promotion-menu-text {
+  font-size: 1.4rem;
+}
+
+.promotion-menu.white {
+  bottom: 100%;
+}
+
+.promotion-menu.black {
+  top: 100%;
+}
+
+.promotion-menu-pieces {
+  display: none;
+}
+
+.promotion-menu.black .promotion-menu-pieces.black,
+.promotion-menu.white .promotion-menu-pieces.white {
+  display: block;
+  flex-direction: row;
+  width: calc(var(--squares-size) * 5);
 }
 
 @keyframes zomin-zoomout {
