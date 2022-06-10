@@ -142,16 +142,16 @@ function indexInClass(collection, node) {
 }
 
 class Piece {
-  constructor(element, index, numberOfPieces, name) {
+  constructor(element, index, name) {
     this.element = element;
     this.position = null;
     this.index = index;
-    this.numberOfPieces = numberOfPieces;
     this.name = name;
   }
 
   team() {
-    return this.index >= this.numberOfPieces / 2 ? "white" : "black";
+    const regex = new RegExp("white*", "g");
+    return regex.test(this.element.children[0].src) ? "white" : "black";
   }
 
   isLegalMove(previousRequirements, squareToGo) {
@@ -617,9 +617,7 @@ function placePieces() {
   piecesObjects.forEach((pieces) => {
     const elements = document.getElementsByClassName(pieces.name);
     for (let i = 0; i < elements.length; i++) {
-      allPieces.push(
-        new pieces.classToUse(elements[i], i, pieces.number, pieces.name)
-      );
+      allPieces.push(new pieces.classToUse(elements[i], i, pieces.name));
     }
   });
 
