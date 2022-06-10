@@ -152,6 +152,7 @@ class Piece {
     this.index = index;
     this.teamIndex = teamIndex;
     this.name = name;
+    this.firstMove = true;
   }
 
   team() {
@@ -193,11 +194,36 @@ class Piece {
     }
   }
 
+  castlingMoveTo(squareToGo, piecesPosition) {
+    const rooksInSameTeam = piecesPosition.filter(
+      (piece) => piece.team() === this.team() && piece.name === "rooks"
+    );
+    const isQueensideCastling =
+      indexInClass(squares, squareToGo) < indexInClass(squares, this.position);
+
+    const rookToMove = rooksInSameTeam.find(
+      (rook) => rook.teamIndex === (isQueensideCastling ? 0 : 1)
+    );
+    const newRookPosition =
+      squares[
+        indexInClass(squares, squareToGo) + (isQueensideCastling ? 1 : -1)
+      ];
+    squareToGo.append(this.element);
+    this.position = squareToGo;
+    this.firstMove = false;
+    newRookPosition.append(rookToMove.element);
+    rookToMove.position = newRookPosition;
+    rookToMove.firstMove = false;
+    game.endOfTurn();
+  }
+
   moveTo(squareToGo, piecesPosition) {
     if (
-      !willKingBeAttacked(this, squareToGo) &&
-      this.isAuthorizedMove(squareToGo, piecesPosition)
+      this.name === "kings" &&
+      this.isAuthorizedCastlingMove(squareToGo, piecesPosition)
     ) {
+      this.castlingMoveTo(squareToGo, piecesPosition);
+    } else if (this.isAuthorizedMove(squareToGo, piecesPosition)) {
       squareToGo.append(this.element);
       this.position = squareToGo;
       this.firstMove = false;
@@ -260,6 +286,65 @@ class King extends Piece {
   resetPosition() {
     super.resetPosition([squares[4], squares[60]]);
   }
+
+  isAuthorizedCastlingMove(squareToGo, piecesPosition) {
+    const actualPosition = {
+      row: indexInClass(rows, this.position.parentElement),
+      column: indexInClass(this.position.parentElement.children, this.position),
+    };
+    const destination = {
+      row: indexInClass(rows, squareToGo.parentElement),
+      column: indexInClass(squareToGo.parentElement.children, squareToGo),
+    };
+    const squaresBetween = [];
+    for (let i = 0; i < squares.length; i++) {
+      const squareColumnIndex = indexInClass(
+        squares[i].parentElement.children,
+        squares[i]
+      );
+      const squareRowIndex = indexInClass(rows, squares[i].parentElement);
+      const columnRange = [actualPosition.column, destination.column].sort(
+        (a, b) => a - b
+      );
+      if (
+        destination.row === actualPosition.row &&
+        squareRowIndex === actualPosition.row &&
+        squareColumnIndex > columnRange[0] &&
+        squareColumnIndex < columnRange[1]
+      ) {
+        squaresBetween.push(squares[i]);
+      }
+    }
+    const rooksInSameTeam = piecesPosition.filter(
+      (piece) => piece.team() === this.team() && piece.name === "rooks"
+    );
+    const queensideCastling =
+      actualPosition.row === destination.row &&
+      Math.abs(actualPosition.column - destination.column) === 2 &&
+      actualPosition.column > destination.column &&
+      rooksInSameTeam.find((rook) => rook.teamIndex === 0).firstMove;
+    const kingsideCastling =
+      actualPosition.row === destination.row &&
+      Math.abs(actualPosition.column - destination.column) === 2 &&
+      actualPosition.column < destination.column &&
+      rooksInSameTeam.find((rook) => rook.teamIndex === 1).firstMove;
+    const piecesBetween = squaresBetween.find((square) =>
+      piecesPosition.find((piece) => piece.position === square)
+    );
+    const squaresBetweenAttacked = squaresBetween.find((square) =>
+      piecesPosition.find(
+        (piece) =>
+          piece.team() !== this.team() &&
+          piece.isAuthorizedMove(square, piecesPosition)
+      )
+    );
+    return (
+      (queensideCastling || kingsideCastling) &&
+      !piecesBetween &&
+      !squaresBetweenAttacked
+    );
+  }
+
   isAuthorizedMove(squareToGo, piecesPosition) {
     const actualPosition = {
       row: indexInClass(rows, this.position.parentElement),
@@ -271,8 +356,9 @@ class King extends Piece {
     };
 
     return super.isLegalMove(
-      Math.abs(actualPosition.row - destination.row) < 2 &&
-        Math.abs(actualPosition.column - destination.column) < 2,
+      (Math.abs(actualPosition.row - destination.row) < 2 &&
+        Math.abs(actualPosition.column - destination.column) < 2) ||
+        this.isAuthorizedCastlingMove(squareToGo, piecesPosition),
       squareToGo
     );
   }
@@ -302,11 +388,6 @@ class Knight extends Piece {
 }
 
 class Pawn extends Piece {
-  constructor(element, index, numberOfPieces, name) {
-    super(element, index, numberOfPieces, name);
-    this.firstMove = true;
-  }
-
   resetPosition() {
     super.resetPosition([
       squares[8],
