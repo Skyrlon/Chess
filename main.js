@@ -60,6 +60,7 @@ class Game {
               .find((possibleMove) => possibleMove === piece.position)
         )
     );
+
     const teamPlaying = allPieces.filter(
       (piece) =>
         piece.team() ===
@@ -91,13 +92,13 @@ class Game {
     if (
       kingAttacked &&
       (kingAttacked.getAllPossibleMoves(allPieces).length > 0 ||
-        this.canTeamPreventCheckMate(kingAttacked))
+        this.doesTeamHavePossibleMoves(kingAttacked))
     ) {
       alert(`${kingAttacked.team()} king is in check`);
     } else if (
       kingAttacked &&
       kingAttacked.getAllPossibleMoves(allPieces).length === 0 &&
-      !this.canTeamPreventCheckMate(kingAttacked)
+      !this.doesTeamHavePossibleMoves(kingAttacked)
     ) {
       alert(`${kingAttacked.team()} king is in checkmate`);
       this.statusOfTheGame = "over";
@@ -120,17 +121,15 @@ class Game {
     }
   }
 
-  canTeamPreventCheckMate(kingAttacked) {
+  doesTeamHavePossibleMoves(kingAttacked) {
     const kingAttackedTeamMates = [...allPieces].filter(
       (piece) => piece.team() === kingAttacked?.team()
     );
-    const canOneTeamMateProtectKing = kingAttackedTeamMates.find((teamMate) => {
-      return teamMate
-        .getAllPossibleMoves(allPieces)
-        .find((possibleMove) => !willKingBeAttacked(teamMate, possibleMove));
-    });
+    const canOneTeamMateMove = kingAttackedTeamMates.find(
+      (teamMate) => teamMate.getAllPossibleMoves(allPieces).length > 0
+    );
 
-    return canOneTeamMateProtectKing;
+    return canOneTeamMateMove;
   }
 }
 
@@ -172,8 +171,12 @@ class Piece {
   }
 
   getAllPossibleMoves(piecesPosition) {
-    const allPossibleMoves = [...squares].filter((square) =>
-      this.isAuthorizedMove(square, piecesPosition)
+    const allPossibleMoves = [...squares].filter(
+      (square) =>
+        this.isAuthorizedMove(square, piecesPosition) &&
+        !piecesPosition.find(
+          (piece) => piece.team() === this.team() && square === piece.position
+        )
     );
     return allPossibleMoves;
   }
