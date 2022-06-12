@@ -100,6 +100,7 @@ class Game {
       !this.canTeamPreventCheckMate(kingAttacked)
     ) {
       alert(`${kingAttacked.team()} king is in checkmate`);
+      this.statusOfTheGame = "over";
     } else if (
       !kingAttacked &&
       !teamPlaying.find(
@@ -107,6 +108,7 @@ class Game {
       )
     ) {
       alert("Stalemate");
+      this.statusOfTheGame = "over";
     } else if (
       !kingAttacked &&
       (bishopKingVsKingDraw ||
@@ -114,6 +116,7 @@ class Game {
         bishopKingVsBishopKingDraw)
     ) {
       alert("Impossibility of checkmate");
+      this.statusOfTheGame = "over";
     }
   }
 
@@ -665,6 +668,10 @@ function createBoard() {
 }
 
 function handleSquareClick(e) {
+  if (game.statusOfTheGame !== "on going") {
+    return;
+  }
+
   if (
     !squareSelected &&
     !!allPieces.find(
