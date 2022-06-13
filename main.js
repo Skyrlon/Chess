@@ -11,6 +11,8 @@ const resultElement = document.querySelector(".result");
 
 const resultText = document.querySelector(".result-text");
 
+const restartButton = document.querySelector(".restart");
+
 const promotionMenu = document.getElementsByClassName("promotion-menu")[0];
 
 const promotionPieces = document.querySelectorAll(".promotion-pieces");
@@ -26,11 +28,28 @@ startButton.addEventListener("click", function () {
   placePieces();
 });
 
+restartButton.addEventListener("click", function () {
+  resultElement.classList.remove("show");
+  whitePlayer.isTheirTurn = true;
+  blackPlayer.isTheirTurn = false;
+  game.onGoing = true;
+  playerTurnDiv.classList.remove("white");
+  playerTurnDiv.classList.remove("black");
+  playerTurnDiv.classList.add("white");
+  whiteGraveyard.innerHTML = "";
+  blackGraveyard.innerHTML = "";
+  board.innerHTML = "";
+  allPieces = [];
+  createBoard();
+  createPieces();
+  placePieces();
+});
+
 const board = document.getElementById("board");
 const rows = document.getElementsByClassName("rows");
 const squares = document.getElementsByClassName("squares");
 
-const allPieces = [];
+let allPieces = [];
 let squareSelected = null;
 
 class Game {
