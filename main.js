@@ -7,6 +7,10 @@ const blackGraveyard = document.querySelectorAll(
   "div.lost-pieces-zone.black"
 )[0];
 
+const resultElement = document.querySelector(".result");
+
+const resultText = document.querySelector(".result-text");
+
 const promotionMenu = document.getElementsByClassName("promotion-menu")[0];
 
 const promotionPieces = document.querySelectorAll(".promotion-pieces");
@@ -15,7 +19,7 @@ startButton.addEventListener("click", function () {
   startButton.classList.add("game-started");
   whitePlayer.isTheirTurn = true;
   blackPlayer.isTheirTurn = false;
-  game.statusOfTheGame = "on going";
+  game.onGoing = true;
   playerTurnDiv.classList.add("white");
   createBoard();
   createPieces();
@@ -30,8 +34,14 @@ const allPieces = [];
 let squareSelected = null;
 
 class Game {
-  constructor(statusOfTheGame) {
-    this.statusOfTheGame = statusOfTheGame;
+  constructor(onGoing) {
+    this.onGoing = onGoing;
+  }
+
+  endOfTheGame(result) {
+    this.onGoing = false;
+    resultElement.classList.add("show");
+    resultText.textContent = result;
   }
 
   endOfTurn() {
@@ -100,24 +110,21 @@ class Game {
       kingAttacked.getAllPossibleMoves(allPieces).length === 0 &&
       !this.doesTeamHavePossibleMoves(kingAttacked)
     ) {
-      alert(`${kingAttacked.team()} king is in checkmate`);
-      this.statusOfTheGame = "over";
+      this.endOfTheGame(`${kingAttacked.team()} king is in checkmate`);
     } else if (
       !kingAttacked &&
       !teamPlaying.find(
         (piece) => piece.getAllPossibleMoves(allPieces).length > 0
       )
     ) {
-      alert("Stalemate");
-      this.statusOfTheGame = "over";
+      this.endOfTheGame("Stalemate");
     } else if (
       !kingAttacked &&
       (bishopKingVsKingDraw ||
         knightKingVsKingDraw ||
         bishopKingVsBishopKingDraw)
     ) {
-      alert("Impossibility of checkmate");
-      this.statusOfTheGame = "over";
+      this.endOfTheGame("Impossibility of checkmate");
     }
   }
 
@@ -140,7 +147,7 @@ class Player {
   }
 }
 
-const game = new Game("not started");
+const game = new Game(false);
 const whitePlayer = new Player("white", true);
 const blackPlayer = new Player("black", false);
 
@@ -671,7 +678,7 @@ function createBoard() {
 }
 
 function handleSquareClick(e) {
-  if (game.statusOfTheGame !== "on going") {
+  if (!game.onGoing) {
     return;
   }
 
