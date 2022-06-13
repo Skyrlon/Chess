@@ -1,5 +1,11 @@
 const startButton = document.getElementById("start-button");
 const playerTurnDiv = document.getElementsByClassName("player-turn")[0];
+const whiteCheckText = document.querySelector(
+  ".player-turn-white-king-attacked"
+);
+const blackCheckText = document.querySelector(
+  ".player-turn-black-king-attacked"
+);
 const whiteGraveyard = document.querySelectorAll(
   "div.lost-pieces-zone.white"
 )[0];
@@ -73,6 +79,8 @@ class Game {
       playerTurnDiv.classList.add("black");
       playerTurnDiv.classList.remove("white");
     }
+    whiteCheckText.classList.remove("show");
+    blackCheckText.classList.remove("show");
     this.getStatusOfTheGame();
     resetSquareSelected();
   }
@@ -123,7 +131,9 @@ class Game {
       (kingAttacked.getAllPossibleMoves(allPieces).length > 0 ||
         this.doesTeamHavePossibleMoves(kingAttacked))
     ) {
-      alert(`${kingAttacked.team()} king is in check`);
+      kingAttacked.team() === "white"
+        ? whiteCheckText.classList.add("show")
+        : blackCheckText.classList.add("show");
     } else if (
       kingAttacked &&
       kingAttacked.getAllPossibleMoves(allPieces).length === 0 &&
