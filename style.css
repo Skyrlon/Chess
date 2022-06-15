@@ -218,6 +218,26 @@ img {
   font-size: 1.5rem;
 }
 
+.language {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  top: 1%;
+  right: 1%;
+  width: 10rem;
+  height: 5rem;
+}
+
+.language > * {
+  margin: 0.25rem;
+  width: 50%;
+  height: 50%;
+}
+
+.language > .choosen {
+  border: 0.20rem solid red;
+}
+
 @keyframes zomin-zoomout {
   from {
     transform: translateX(-50%) translateY(-50%) scale(1);

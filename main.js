@@ -23,6 +23,21 @@ const promotionMenu = document.getElementsByClassName("promotion-menu")[0];
 
 const promotionPieces = document.querySelectorAll(".promotion-pieces");
 
+const frenchFlag = document.querySelector(".language-fr");
+const ukFlag = document.querySelector(".language-en");
+
+ukFlag.classList.add("choosen");
+
+frenchFlag.addEventListener("click", function (e) {
+  ukFlag.classList.remove("choosen");
+  e.target.classList.add("choosen");
+});
+
+ukFlag.addEventListener("click", function (e) {
+  frenchFlag.classList.remove("choosen");
+  e.target.classList.add("choosen");
+});
+
 startButton.addEventListener("click", function () {
   startButton.classList.add("game-started");
   whitePlayer.isTheirTurn = true;
