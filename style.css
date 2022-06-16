@@ -232,10 +232,11 @@ img {
   margin: 0.25rem;
   width: 50%;
   height: 50%;
+  filter: grayscale(1);
 }
 
 .language > .choosen {
-  border: 0.20rem solid red;
+  filter: grayscale(0);
 }
 
 @keyframes zomin-zoomout {
