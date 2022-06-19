@@ -6,7 +6,7 @@ body {
 }
 
 :root {
-  --squares-size: 5rem;
+  --squares-size: 5vw;
 }
 
 body {
@@ -47,11 +47,11 @@ body {
 
 .squares.selected .border {
   position: absolute;
-  border: 0.4rem solid green;
+  border: calc(var(--squares-size) * 0.09) solid green;
 }
 
 .squares.selected.cant-move .border {
-  border: 0.4rem solid red;
+  border: calc(var(--squares-size) * 0.09) solid red;
 }
 
 .rows:nth-child(odd) .squares:nth-child(odd),
@@ -101,7 +101,7 @@ img {
   z-index: 99;
   left: 50%;
   transform: translate(-50%);
-  font-size: 5rem;
+  font-size: var(--squares-size);
 }
 
 #start-button.game-started {
