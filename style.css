@@ -209,8 +209,13 @@ img {
   border: 10px double black;
 }
 .result-text {
+  display: none;
   text-transform: uppercase;
   font-size: 1.5rem;
+}
+
+.result-text.show {
+  display: block;
 }
 
 .restart {

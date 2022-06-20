@@ -15,7 +15,7 @@ const blackGraveyard = document.querySelectorAll(
 
 const resultElement = document.querySelector(".result");
 
-const resultText = document.querySelector(".result-text");
+const resultText = document.querySelectorAll(".result-text");
 
 const restartButton = document.querySelector(".restart");
 
@@ -81,7 +81,13 @@ class Game {
   endOfTheGame(result) {
     this.onGoing = false;
     resultElement.classList.add("show");
-    resultText.textContent = result;
+    resultText.forEach((text) => {
+      if (text.classList.contains(`${result}`)) {
+        text.classList.add("show");
+      } else {
+        text.classList.remove("show");
+      }
+    });
   }
 
   endOfTurn() {
@@ -154,21 +160,21 @@ class Game {
       kingAttacked.getAllPossibleMoves(allPieces).length === 0 &&
       !this.doesTeamHavePossibleMoves(kingAttacked)
     ) {
-      this.endOfTheGame(`${kingAttacked.team()} king is in checkmate`);
+      this.endOfTheGame(`${kingAttacked.team()}-checkmate`);
     } else if (
       !kingAttacked &&
       !teamPlaying.find(
         (piece) => piece.getAllPossibleMoves(allPieces).length > 0
       )
     ) {
-      this.endOfTheGame("Stalemate");
+      this.endOfTheGame("stalemate");
     } else if (
       !kingAttacked &&
       (bishopKingVsKingDraw ||
         knightKingVsKingDraw ||
         bishopKingVsBishopKingDraw)
     ) {
-      this.endOfTheGame("Impossibility of checkmate");
+      this.endOfTheGame("impossibility-checkmate");
     }
   }
 
