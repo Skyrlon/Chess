@@ -1,17 +1,13 @@
-const startButton = document.getElementById("start-button");
-const playerTurnDiv = document.getElementsByClassName("player-turn")[0];
+const startButton = document.querySelector(".start-button");
+const playerTurnDiv = document.querySelector(".player-turn");
 const whiteCheckText = document.querySelector(
   ".player-turn-white-king-attacked"
 );
 const blackCheckText = document.querySelector(
   ".player-turn-black-king-attacked"
 );
-const whiteGraveyard = document.querySelectorAll(
-  "div.lost-pieces-zone.white"
-)[0];
-const blackGraveyard = document.querySelectorAll(
-  "div.lost-pieces-zone.black"
-)[0];
+const whiteGraveyard = document.querySelector(".lost-pieces-zone.white");
+const blackGraveyard = document.querySelector(".lost-pieces-zone.black");
 
 const resultElement = document.querySelector(".result");
 
@@ -19,7 +15,7 @@ const resultText = document.querySelectorAll(".result-text");
 
 const restartButton = document.querySelector(".restart");
 
-const promotionMenu = document.getElementsByClassName("promotion-menu")[0];
+const promotionMenu = document.querySelector(".promotion-menu");
 
 const promotionPieces = document.querySelectorAll(".promotion-pieces");
 
@@ -31,12 +27,55 @@ ukFlag.classList.add("choosen");
 frenchFlag.addEventListener("click", function (e) {
   ukFlag.classList.remove("choosen");
   e.target.classList.add("choosen");
+  loadText(fr);
 });
 
 ukFlag.addEventListener("click", function (e) {
   frenchFlag.classList.remove("choosen");
   e.target.classList.add("choosen");
+  loadText(en);
 });
+
+const en = {
+  "start-button": "start",
+  "player-turn-white-text": "Whites turn",
+  "player-turn-white-king-attacked": "White king is in check !",
+  "player-turn-black-text": "Blacks turn",
+  "player-turn-black-king-attacked": "Black king is in check !",
+  "black-checkmate": "Black king is in checkmate",
+  "white-checkmate": "White king is in checkmate",
+  stalemate: "Stalemate",
+  "impossibility-checkmate": "Impossibility of checkmate",
+  restart: "Restart",
+  "promotion-menu-text": "Choose the piece that will replace the pawn",
+};
+
+const fr = {
+  "start-button": "commencer",
+  "player-turn-white-text": "Tour des blanc",
+  "player-turn-white-king-attacked": "Roi blanc en échec !",
+  "player-turn-black-text": "Tour des noirs",
+  "player-turn-black-king-attacked": "Roi noir en échec !",
+  "black-checkmate": "Roi noir en échec et mat",
+  "white-checkmate": "Roi blanc en échec et mat",
+  stalemate: "Pat",
+  "impossibility-checkmate": "Impossibilité d'échec et mat",
+  restart: "Recommencer",
+  "promotion-menu-text": "Choisir la pièce qui remplecera le pion",
+};
+
+function loadText(languageChoosen) {
+  const textsContainers = document.querySelectorAll(".lang");
+  textsContainers.forEach((container) => {
+    const keyWithSameNameThanTextContainerClass = Object.keys(
+      languageChoosen
+    ).find((keyName) => container.classList.contains(keyName));
+    if (keyWithSameNameThanTextContainerClass) {
+      container.textContent =
+        languageChoosen[keyWithSameNameThanTextContainerClass];
+    }
+  });
+}
 
 startButton.addEventListener("click", function () {
   startButton.classList.add("game-started");
@@ -82,7 +121,7 @@ class Game {
     this.onGoing = false;
     resultElement.classList.add("show");
     resultText.forEach((text) => {
-      if (text.classList.contains(`${result}`)) {
+      if (text.classList.contains(result)) {
         text.classList.add("show");
       } else {
         text.classList.remove("show");

@@ -96,7 +96,7 @@ img {
   height: calc(var(--squares-size) * 4);
 }
 
-#start-button {
+.start-button {
   position: absolute;
   z-index: 99;
   left: 50%;
@@ -104,7 +104,7 @@ img {
   font-size: var(--squares-size);
 }
 
-#start-button.game-started {
+.start-button.game-started {
   display: none;
 }
 
