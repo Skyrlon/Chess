@@ -27,12 +27,14 @@ ukFlag.classList.add("choosen");
 frenchFlag.addEventListener("click", function (e) {
   ukFlag.classList.remove("choosen");
   e.target.classList.add("choosen");
+  localStorage.setItem("language", "fr");
   loadText(fr);
 });
 
 ukFlag.addEventListener("click", function (e) {
   frenchFlag.classList.remove("choosen");
   e.target.classList.add("choosen");
+  localStorage.setItem("language", "en");
   loadText(en);
 });
 
@@ -63,6 +65,21 @@ const fr = {
   restart: "Recommencer",
   "promotion-menu-text": "Choisir la pièce qui remplecera le pion",
 };
+
+if (localStorage.getItem("language")) {
+  if (localStorage.getItem("language") === "en") {
+    loadText(en);
+    ukFlag.classList.add("choosen");
+    frenchFlag.classList.remove("choosen");
+  }
+  if (localStorage.getItem("language") === "fr") {
+    loadText(fr);
+    frenchFlag.classList.add("choosen");
+    ukFlag.classList.remove("choosen");
+  }
+} else {
+  loadText(en);
+}
 
 function loadText(languageChoosen) {
   const textsContainers = document.querySelectorAll(".lang");

@@ -102,6 +102,7 @@ img {
   left: 50%;
   transform: translate(-50%);
   font-size: var(--squares-size);
+  text-transform: uppercase;
 }
 
 .start-button.game-started {
