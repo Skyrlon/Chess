@@ -116,12 +116,26 @@ img {
   align-items: center;
 }
 
-.player-turn.white {
-  bottom: 5%;
+@media (orientation: landscape) {
+  .player-turn.white {
+    right: 1%;
+    bottom: 0%;
+  }
+
+  .player-turn.black {
+    left: 1%;
+    top: 0%;
+  }
 }
 
-.player-turn.black {
-  top: 5%;
+@media (orientation: portrait) {
+  .player-turn.white {
+    bottom: 10%;
+  }
+
+  .player-turn.black {
+    top: 10%;
+  }
 }
 
 .player-turn-black-text {

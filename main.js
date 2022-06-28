@@ -63,7 +63,7 @@ const fr = {
   stalemate: "Pat",
   "impossibility-checkmate": "Impossibilité d'échec et mat",
   restart: "Recommencer",
-  "promotion-menu-text": "Choisir la pièce qui remplecera le pion",
+  "promotion-menu-text": "Choisissez la pièce qui remplacera le pion",
 };
 
 if (localStorage.getItem("language")) {
