@@ -353,6 +353,7 @@ class Piece {
     this.position = squareToGo;
     resetSquareSelected();
     promotionMenu.classList.add("show", this.team());
+    squareToGo.append(promotionMenu);
     promotionPieces.forEach((piece) => {
       piece.addEventListener("click", onPromotionPieceClick);
       piece.myParam = { pieceToPromote: this, squareToGo };
