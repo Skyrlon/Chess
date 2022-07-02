@@ -17,6 +17,8 @@ const restartButton = document.querySelector(".restart");
 
 const promotionMenu = document.querySelector(".promotion-menu");
 
+const promotionMenuText = document.querySelector(".promotion-menu-text");
+
 const promotionPieces = document.querySelectorAll(".promotion-pieces");
 
 const frenchFlag = document.querySelector(".language-fr");
@@ -353,6 +355,7 @@ class Piece {
     this.position = squareToGo;
     resetSquareSelected();
     promotionMenu.classList.add("show", this.team());
+    promotionMenuText.classList.add("show", this.team());
     squareToGo.append(promotionMenu);
     promotionPieces.forEach((piece) => {
       piece.addEventListener("click", onPromotionPieceClick);
@@ -367,6 +370,7 @@ class Piece {
     this.position = this.team() === "white" ? whiteGraveyard : blackGraveyard;
     this.position.append(this.element);
     promotionMenu.classList.remove("show", this.team());
+    promotionMenuText.classList.remove("show", this.team());
     promotionPieces.forEach((piece) =>
       piece.removeEventListener("click", onPromotionPieceClick)
     );

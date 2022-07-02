@@ -187,16 +187,23 @@ img {
 
 .promotion-menu-text {
   position: absolute;
-  width: 25rem;
+  display: none;
   font-size: 1.4rem;
 }
 
-.promotion-menu.white .promotion-menu-text {
-  top: calc(var(--squares-size) * -1.5);
+.promotion-menu-text.show {
+  display: block;
+  width:25rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.promotion-menu-text.white {
+  bottom: 100%;
 }
 
 .promotion-menu.black .promotion-menu-text {
-  bottom: calc(var(--squares-size) * -1.5);
+  top: 100%;
 }
 
 .promotion-menu.white {
