@@ -16,6 +16,10 @@ body {
   align-items: center;
 }
 
+.board-container {
+  position: relative;
+}
+
 #board {
   position: relative;
   display: flex;
@@ -193,7 +197,7 @@ img {
 
 .promotion-menu-text.show {
   display: block;
-  width:25rem;
+  width: 25rem;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -202,7 +206,7 @@ img {
   bottom: 100%;
 }
 
-.promotion-menu.black .promotion-menu-text {
+.promotion-menu-text.black {
   top: 100%;
 }
 
