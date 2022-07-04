@@ -789,7 +789,7 @@ function createBoard() {
 }
 
 function handleSquareClick(e) {
-  if (!game.onGoing) {
+  if (!game.onGoing || promotionMenuText.classList.contains("show")) {
     return;
   }
 
