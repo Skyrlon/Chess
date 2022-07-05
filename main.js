@@ -17,6 +17,8 @@ const restartButton = document.querySelector(".restart");
 
 const promotionMenu = document.querySelector(".promotion-menu");
 
+const promotionMenuPieces = document.querySelectorAll(".promotion-menu-pieces");
+
 const promotionMenuText = document.querySelector(".promotion-menu-text");
 
 const promotionPieces = document.querySelectorAll(".promotion-pieces");
@@ -355,6 +357,7 @@ class Piece {
     this.position = squareToGo;
     resetSquareSelected();
     promotionMenu.classList.add("show", this.team());
+    promotionMenuPieces.forEach((piece) => piece.classList.add("show"));
     promotionMenuText.classList.add("show", this.team());
     squareToGo.append(promotionMenu);
     promotionPieces.forEach((piece) => {
@@ -370,6 +373,7 @@ class Piece {
     this.position = this.team() === "white" ? whiteGraveyard : blackGraveyard;
     this.position.append(this.element);
     promotionMenu.classList.remove("show", this.team());
+    promotionMenuPieces.forEach((piece) => piece.classList.remove("show"));
     promotionMenuText.classList.remove("show", this.team());
     promotionPieces.forEach((piece) =>
       piece.removeEventListener("click", onPromotionPieceClick)
@@ -789,11 +793,16 @@ function createBoard() {
 }
 
 function handleSquareClick(e) {
-  if (!game.onGoing || promotionMenuText.classList.contains("show")) {
-    return;
-  }
-
   if (
+    promotionMenuText.classList.contains("show") &&
+    [...e.currentTarget.children].some((child) =>
+      child.classList.contains("promotion-menu")
+    )
+  ) {
+    promotionMenuPieces.forEach((piece) => piece.classList.toggle("show"));
+  } else if (!game.onGoing || promotionMenuText.classList.contains("show")) {
+    return;
+  } else if (
     !squareSelected &&
     !!allPieces.find(
       (piece) =>

@@ -222,8 +222,8 @@ img {
   display: none;
 }
 
-.promotion-menu.black .promotion-menu-pieces.black,
-.promotion-menu.white .promotion-menu-pieces.white {
+.promotion-menu.black .promotion-menu-pieces.black.show,
+.promotion-menu.white .promotion-menu-pieces.white.show {
   display: flex;
   flex-direction: column;
   background-color: white;
