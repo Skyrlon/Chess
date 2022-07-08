@@ -15,13 +15,19 @@
         <img class="language-fr" src="./assets/flag_france.svg" />
         <img class="language-en" src="./assets/flag_uk.svg" />
     </div>
+
     <button class="start-button lang"></button>
+
     <div class="player-turn">
         <span class="player-turn-white-text lang"></span>
-        <span class="player-turn-white-king-attacked lang"></span>
         <span class="player-turn-black-text lang"></span>
-        <span class="player-turn-black-king-attacked lang"></span>
     </div>
+
+
+    <span class="white-king-attacked lang"></span>
+
+    <span class="black-king-attacked lang"></span>
+
     <div class="result">
         <span class="result-text black-checkmate lang"></span>
         <span class="result-text white-checkmate lang"></span>
@@ -29,7 +35,8 @@
         <span class="result-text impossibility-checkmate lang"></span>
         <button class="restart lang"></button>
     </div>
-    <div class="lost-pieces">
+
+    <div class="lost-pieces white">
         <div class="lost-pieces-zone white"></div>
     </div>
 
@@ -52,10 +59,10 @@
         <div id="board"></div>
     </div>
 
-
-    <div class="lost-pieces">
+    <div class="lost-pieces black">
         <div class="lost-pieces-zone black"></div>
     </div>
+
     <script src="main.js"></script>
 </body>
 

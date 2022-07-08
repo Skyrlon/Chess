@@ -1,11 +1,7 @@
 const startButton = document.querySelector(".start-button");
 const playerTurnDiv = document.querySelector(".player-turn");
-const whiteCheckText = document.querySelector(
-  ".player-turn-white-king-attacked"
-);
-const blackCheckText = document.querySelector(
-  ".player-turn-black-king-attacked"
-);
+const whiteCheckText = document.querySelector(".white-king-attacked");
+const blackCheckText = document.querySelector(".black-king-attacked");
 const whiteGraveyard = document.querySelector(".lost-pieces-zone.white");
 const blackGraveyard = document.querySelector(".lost-pieces-zone.black");
 
@@ -45,9 +41,9 @@ ukFlag.addEventListener("click", function (e) {
 const en = {
   "start-button": "start",
   "player-turn-white-text": "Whites turn",
-  "player-turn-white-king-attacked": "White king is in check !",
+  "white-king-attacked": "White king is in check !",
   "player-turn-black-text": "Blacks turn",
-  "player-turn-black-king-attacked": "Black king is in check !",
+  "black-king-attacked": "Black king is in check !",
   "black-checkmate": "Black king is in checkmate",
   "white-checkmate": "White king is in checkmate",
   stalemate: "Stalemate",
@@ -59,9 +55,9 @@ const en = {
 const fr = {
   "start-button": "commencer",
   "player-turn-white-text": "Tour des blanc",
-  "player-turn-white-king-attacked": "Roi blanc en échec !",
+  "white-king-attacked": "Roi blanc en échec !",
   "player-turn-black-text": "Tour des noirs",
-  "player-turn-black-king-attacked": "Roi noir en échec !",
+  "black-king-attacked": "Roi noir en échec !",
   "black-checkmate": "Roi noir en échec et mat",
   "white-checkmate": "Roi blanc en échec et mat",
   stalemate: "Pat",
