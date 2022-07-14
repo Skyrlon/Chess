@@ -29,6 +29,7 @@ frenchFlag.addEventListener("click", function (e) {
   e.target.classList.add("choosen");
   localStorage.setItem("language", "fr");
   loadText(fr);
+  document.title = "Échecs";
 });
 
 ukFlag.addEventListener("click", function (e) {
@@ -36,6 +37,7 @@ ukFlag.addEventListener("click", function (e) {
   e.target.classList.add("choosen");
   localStorage.setItem("language", "en");
   loadText(en);
+  document.title = "Chess";
 });
 
 const en = {
@@ -71,11 +73,13 @@ if (localStorage.getItem("language")) {
     loadText(en);
     ukFlag.classList.add("choosen");
     frenchFlag.classList.remove("choosen");
+    document.title = "Chess";
   }
   if (localStorage.getItem("language") === "fr") {
     loadText(fr);
     frenchFlag.classList.add("choosen");
     ukFlag.classList.remove("choosen");
+    document.title = "Échecs";
   }
 } else {
   loadText(en);
