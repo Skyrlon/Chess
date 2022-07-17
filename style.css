@@ -317,8 +317,8 @@ img {
   flex-direction: row;
   top: 1%;
   right: 1%;
-  width: 10rem;
-  height: 5rem;
+  width: calc(var(--squares-size) * 2);
+  height: var(--squares-size);
 }
 
 .language > * {
