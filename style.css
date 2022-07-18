@@ -172,11 +172,11 @@ img {
 
 @media (orientation: portrait) {
   .player-turn.white {
-    bottom: 10%;
+    bottom: 0%;
   }
 
   .player-turn.black {
-    top: 10%;
+    top: 0%;
   }
 }
 
