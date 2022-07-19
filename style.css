@@ -115,6 +115,9 @@ img {
 }
 
 .lost-pieces {
+  border: 1px solid;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -135,6 +138,13 @@ img {
   flex-wrap: wrap;
   width: calc(var(--squares-size) * 4);
   height: calc(var(--squares-size) * 4);
+}
+
+@media screen and (min-width: 401px) {
+  .lost-pieces-zone {
+    width: calc(var(--squares-size) * 8);
+    height: calc(var(--squares-size) * 2);
+  }
 }
 
 .start-button {
