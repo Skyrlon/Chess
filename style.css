@@ -17,9 +17,9 @@ body {
     grid-template-rows: 1fr 5fr 1fr;
     gap: 0px 0px;
     grid-template-areas:
-      ". top-text ."
+      "black-turn top-text flags"
       "white-pieces-lost board black-pieces-lost"
-      ". bottom-text .";
+      ". bottom-text white-turn";
   }
 }
 
@@ -35,8 +35,15 @@ body {
     justify-content: center;
     align-items: center;
   }
+
   body > * {
     flex-basis: auto;
+  }
+
+  .language {
+    position: absolute;
+    top: 1%;
+    right: 1%;
   }
 }
 
@@ -162,7 +169,6 @@ img {
 }
 
 .player-turn {
-  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -170,13 +176,11 @@ img {
 
 @media (orientation: landscape) {
   .player-turn.white {
-    right: 1%;
-    bottom: 0%;
+    grid-area: white-turn;
   }
 
   .player-turn.black {
-    left: 1%;
-    top: 0%;
+    grid-area: black-turn;
   }
 }
 
@@ -322,24 +326,23 @@ img {
 }
 
 .language {
-  position: absolute;
+  grid-area: flags;
   display: flex;
   flex-direction: row;
-  top: 1%;
-  right: 1%;
-  width: calc(var(--squares-size) * 2);
-  height: var(--squares-size);
+  justify-content: flex-end;
 }
 
-.language > * {
+.flags > * {
   margin: 0.25rem;
-  width: 50%;
-  height: 50%;
   filter: grayscale(1);
 }
 
-.language > .choosen {
+.flags > .choosen {
   filter: grayscale(0);
+}
+
+.language-fr {
+  transform: scaleY(50%);
 }
 
 @keyframes zomin-zoomout {
