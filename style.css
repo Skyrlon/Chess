@@ -161,16 +161,19 @@ img {
 .player-turn {
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 @media (orientation: landscape) {
   .player-turn.white {
     grid-area: white-turn;
+    justify-content: flex-end;
+    align-items: flex-end;
   }
 
   .player-turn.black {
     grid-area: black-turn;
+    justify-content: flex-start;
+    align-items: flex-start;
   }
 }
 
