@@ -119,6 +119,7 @@ img {
   position: relative;
   width: var(--squares-size);
   height: var(--squares-size);
+  user-select: none;
 }
 
 .lost-pieces {
