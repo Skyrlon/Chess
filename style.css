@@ -329,6 +329,8 @@ img {
 .flags > * {
   margin: 0.25rem;
   filter: grayscale(1);
+  width: 3rem;
+  height: 3rem;
 }
 
 .flags > .choosen {
