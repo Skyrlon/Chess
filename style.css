@@ -18,7 +18,7 @@ body {
     gap: 0px 0px;
     grid-template-areas:
       "black-turn top-text flags"
-      "white-pieces-lost board black-pieces-lost"
+      ". board ."
       ". bottom-text white-turn";
   }
 }
@@ -114,12 +114,15 @@ body {
   animation: zomin-zoomout 1s infinite alternate ease-in-out;
 }
 
-.pieces,
-img {
+.pieces {
   position: relative;
   width: var(--squares-size);
   height: var(--squares-size);
   user-select: none;
+}
+
+.pieces img {
+  width: 100%;
 }
 
 .lost-pieces {
@@ -143,6 +146,12 @@ img {
   position: relative;
   display: flex;
   flex-wrap: wrap;
+  height: calc(var(--squares-size) * 0.5);
+}
+
+.lost-pieces-zone .pieces {
+  width: calc(var(--squares-size) * 0.5);
+  height: calc(var(--squares-size) * 0.5);
 }
 
 .start-button {
