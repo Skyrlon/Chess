@@ -29,7 +29,7 @@ frenchFlag.addEventListener("click", function (e) {
   e.target.classList.add("choosen");
   localStorage.setItem("language", "fr");
   loadText(fr);
-  document.title = "Échecs";
+  document.title = fr.title;
 });
 
 ukFlag.addEventListener("click", function (e) {
@@ -37,10 +37,11 @@ ukFlag.addEventListener("click", function (e) {
   e.target.classList.add("choosen");
   localStorage.setItem("language", "en");
   loadText(en);
-  document.title = "Chess";
+  document.title = en.title;
 });
 
 const en = {
+  title: "Chess",
   "start-button": "start",
   "player-turn-white-text": "Whites turn",
   "white-king-attacked": "White king is in check !",
@@ -55,6 +56,7 @@ const en = {
 };
 
 const fr = {
+  title: "Échecs",
   "start-button": "commencer",
   "player-turn-white-text": "Tour des blanc",
   "white-king-attacked": "Roi blanc en échec !",
