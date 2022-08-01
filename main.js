@@ -24,23 +24,32 @@ const ukFlag = document.querySelector(".language-en");
 
 ukFlag.classList.add("choosen");
 
-frenchFlag.addEventListener("click", function (e) {
-  ukFlag.classList.remove("choosen");
-  e.target.classList.add("choosen");
-  localStorage.setItem("language", "fr");
-  loadText(fr);
-  document.title = fr.title;
-});
+frenchFlag.addEventListener("click", handleFlagClick);
 
-ukFlag.addEventListener("click", function (e) {
-  frenchFlag.classList.remove("choosen");
-  e.target.classList.add("choosen");
-  localStorage.setItem("language", "en");
-  loadText(en);
-  document.title = en.title;
-});
+ukFlag.addEventListener("click", handleFlagClick);
+
+function handleFlagClick(e) {
+  console.log(e.currentTarget);
+  [ukFlag, frenchFlag].forEach((flag) => {
+    if (e.currentTarget === flag) {
+      flag.classList.add("choosen");
+    } else {
+      flag.classList.remove("choosen");
+    }
+  });
+  const languageChoosen = [...e.currentTarget.classList]
+    .find((className) => /^language/.test(className))
+    .slice(-2);
+  const languageObjectChoosen = [en, fr].find(
+    (object) => object.language === languageChoosen
+  );
+  localStorage.setItem("language", languageChoosen);
+  loadText(languageObjectChoosen);
+  document.title = languageObjectChoosen.title;
+}
 
 const en = {
+  language: "en",
   title: "Chess",
   "start-button": "start",
   "player-turn-white-text": "Whites turn",
@@ -56,6 +65,7 @@ const en = {
 };
 
 const fr = {
+  language: "fr",
   title: "Échecs",
   "start-button": "commencer",
   "player-turn-white-text": "Tour des blanc",
@@ -71,18 +81,9 @@ const fr = {
 };
 
 if (localStorage.getItem("language")) {
-  if (localStorage.getItem("language") === "en") {
-    loadText(en);
-    ukFlag.classList.add("choosen");
-    frenchFlag.classList.remove("choosen");
-    document.title = "Chess";
-  }
-  if (localStorage.getItem("language") === "fr") {
-    loadText(fr);
-    frenchFlag.classList.add("choosen");
-    ukFlag.classList.remove("choosen");
-    document.title = "Échecs";
-  }
+  const languageSaved = localStorage.getItem("language");
+  const flagToClick = document.querySelector(`.language-${languageSaved}`);
+  handleFlagClick({ currentTarget: flagToClick });
 } else {
   loadText(en);
 }
