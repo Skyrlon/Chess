@@ -22,14 +22,12 @@ const promotionPieces = document.querySelectorAll(".promotion-pieces");
 const frenchFlag = document.querySelector(".language-fr");
 const ukFlag = document.querySelector(".language-en");
 
-ukFlag.classList.add("choosen");
-
 frenchFlag.addEventListener("click", handleFlagClick);
 
 ukFlag.addEventListener("click", handleFlagClick);
 
 function handleFlagClick(e) {
-  console.log(e.currentTarget);
+  //Find which flag was choosen and give him the "choosen" class name
   [ukFlag, frenchFlag].forEach((flag) => {
     if (e.currentTarget === flag) {
       flag.classList.add("choosen");
@@ -37,9 +35,11 @@ function handleFlagClick(e) {
       flag.classList.remove("choosen");
     }
   });
+  //Extract the 2 letters from class name, which are the language name of the choosen language
   const languageChoosen = [...e.currentTarget.classList]
     .find((className) => /^language/.test(className))
     .slice(-2);
+  //Find the right object which contains all texts
   const languageObjectChoosen = [en, fr].find(
     (object) => object.language === languageChoosen
   );
@@ -85,11 +85,13 @@ if (localStorage.getItem("language")) {
   const flagToClick = document.querySelector(`.language-${languageSaved}`);
   handleFlagClick({ currentTarget: flagToClick });
 } else {
+  ukFlag.classList.add("choosen");
   loadText(en);
 }
 
 function loadText(languageChoosen) {
   const textsContainers = document.querySelectorAll(".lang");
+  //Each object key names are the same as class name of HTML elements
   textsContainers.forEach((container) => {
     const keyWithSameNameThanTextContainerClass = Object.keys(
       languageChoosen
