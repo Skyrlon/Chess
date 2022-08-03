@@ -144,7 +144,9 @@ class Game {
   }
 
   endOfTheGame(result) {
+    //Prevent players to play
     this.onGoing = false;
+    //Show result text
     resultElement.classList.add("show");
     resultText.forEach((text) => {
       if (text.classList.contains(result)) {
@@ -156,8 +158,10 @@ class Game {
   }
 
   endOfTurn() {
+    //Prevent current player to play and authorize other player to play
     whitePlayer.isTheirTurn = !whitePlayer.isTheirTurn;
     blackPlayer.isTheirTurn = !blackPlayer.isTheirTurn;
+    //Show correct text which informs which player can play
     if (whitePlayer.isTheirTurn) {
       playerTurnDiv.classList.add("white");
       playerTurnDiv.classList.remove("black");
@@ -167,11 +171,13 @@ class Game {
     }
     whiteCheckText.classList.remove("show");
     blackCheckText.classList.remove("show");
+    //Check if the game is over or if there is a king in check
     this.getStatusOfTheGame();
     resetSquareSelected();
   }
 
   getStatusOfTheGame() {
+    //Check if there is a king in check
     const kingAttacked = allPieces.find(
       (piece) =>
         piece.name === "kings" &&
@@ -184,21 +190,26 @@ class Game {
         )
     );
 
+    //Get all current player's pieces alive
     const teamPlaying = allPieces.filter(
       (piece) =>
         piece.team() ===
           [whitePlayer, blackPlayer].find((player) => player.isTheirTurn)
             .team && ![whiteGraveyard, blackGraveyard].includes(piece.position)
     );
+    //Get all pieces alive
     const allPiecesNotDead = allPieces.filter(
       (piece) => ![whiteGraveyard, blackGraveyard].includes(piece.position)
     );
+
     const bishopKingVsKingDraw =
       allPiecesNotDead.length === 3 &&
       allPieces.find((piece) => piece.name === "bishops");
+
     const knightKingVsKingDraw =
       allPiecesNotDead.length === 3 &&
       allPiecesNotDead.find((piece) => piece.name === "knights");
+
     const bishopKingVsBishopKingDraw =
       allPiecesNotDead.length === 4 &&
       allPiecesNotDead.find(
@@ -212,6 +223,7 @@ class Game {
                 findSquareColor(otherPiece.position)
           )
       );
+    //King in check
     if (
       kingAttacked &&
       (kingAttacked.getAllPossibleMoves(allPieces).length > 0 ||
@@ -220,20 +232,26 @@ class Game {
       kingAttacked.team() === "white"
         ? whiteCheckText.classList.add("show")
         : blackCheckText.classList.add("show");
-    } else if (
+    }
+    //King in checkmate
+    else if (
       kingAttacked &&
       kingAttacked.getAllPossibleMoves(allPieces).length === 0 &&
       !this.doesTeamHavePossibleMoves(kingAttacked)
     ) {
       this.endOfTheGame(`${kingAttacked.team()}-checkmate`);
-    } else if (
+    }
+    //Stalemate
+    else if (
       !kingAttacked &&
       !teamPlaying.find(
         (piece) => piece.getAllPossibleMoves(allPieces).length > 0
       )
     ) {
       this.endOfTheGame("stalemate");
-    } else if (
+    }
+    //Draw because of impossibility of checkmate
+    else if (
       !kingAttacked &&
       (bishopKingVsKingDraw ||
         knightKingVsKingDraw ||
