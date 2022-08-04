@@ -306,10 +306,12 @@ class Piece {
     return regex.test(this.element.children[0].src) ? "white" : "black";
   }
 
+  //Check if the move does not put his king in danger
   isLegalMove(previousRequirements, squareToGo) {
     return previousRequirements && !willKingBeAttacked(this, squareToGo);
   }
 
+  //Get all possible moves and check if they are legal and if there is no piece from the same team on them
   getAllPossibleMoves(piecesPosition) {
     const allPossibleMoves = [...squares].filter(
       (square) =>
@@ -321,11 +323,13 @@ class Piece {
     return allPossibleMoves;
   }
 
+  //Put the piece on its starting square
   resetPosition(initialPositions) {
     initialPositions[this.index].append(this.element);
     this.position = initialPositions[this.index];
   }
 
+  //Handle when piece attack another
   attack(pieceAttacked, squareToGo, piecesPosition) {
     const lostPiecesZone =
       pieceAttacked.team() === "white" ? whiteGraveyard : blackGraveyard;
@@ -352,6 +356,7 @@ class Piece {
     }
   }
 
+  //Handle castling special move
   castlingMoveTo(squareToGo, piecesPosition) {
     const rooksInSameTeam = piecesPosition.filter(
       (piece) => piece.team() === this.team() && piece.name === "rooks"
@@ -375,6 +380,7 @@ class Piece {
     game.endOfTurn();
   }
 
+  //Show promotion menu
   pawnPromotion(squareToGo) {
     squareToGo.append(this.element);
     this.position = squareToGo;
@@ -389,6 +395,7 @@ class Piece {
     });
   }
 
+  //Triggered when a piece was choosen to swap with the pawn
   pawnPromotionEnd(newPiece, squareToGo) {
     newPiece.position = squareToGo;
     squareToGo.append(newPiece.element);
@@ -404,6 +411,7 @@ class Piece {
     game.endOfTurn();
   }
 
+  //Handle piece moving
   moveTo(squareToGo, piecesPosition) {
     if (
       this.name === "kings" &&
