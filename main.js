@@ -2,8 +2,6 @@ const startButton = document.querySelector(".start-button");
 const playerTurnDiv = document.querySelector(".player-turn");
 const whiteCheckText = document.querySelector(".white-king-attacked");
 const blackCheckText = document.querySelector(".black-king-attacked");
-const whiteGraveyard = document.querySelector(".lost-pieces-zone.white");
-const blackGraveyard = document.querySelector(".lost-pieces-zone.black");
 
 const resultElement = document.querySelector(".result");
 
@@ -122,8 +120,12 @@ restartButton.addEventListener("click", function () {
   playerTurnDiv.classList.remove("white");
   playerTurnDiv.classList.remove("black");
   playerTurnDiv.classList.add("white");
-  whiteGraveyard.innerHTML = "";
-  blackGraveyard.innerHTML = "";
+  document.querySelectorAll(".lost-pieces").forEach((element) => {
+    if (element.classList.contains("show")) {
+      element.classList.remove("show");
+    }
+    element.querySelector(".number").textContent = "";
+  });
   board.innerHTML = "";
   allPieces = [];
   createBoard();
@@ -190,29 +192,24 @@ class Game {
         )
     );
 
-    //Get all current player's pieces alive
+    //Get all current player's pieces
     const teamPlaying = allPieces.filter(
       (piece) =>
         piece.team() ===
-          [whitePlayer, blackPlayer].find((player) => player.isTheirTurn)
-            .team && ![whiteGraveyard, blackGraveyard].includes(piece.position)
-    );
-    //Get all pieces alive
-    const allPiecesNotDead = allPieces.filter(
-      (piece) => ![whiteGraveyard, blackGraveyard].includes(piece.position)
+        [whitePlayer, blackPlayer].find((player) => player.isTheirTurn).team
     );
 
     const bishopKingVsKingDraw =
-      allPiecesNotDead.length === 3 &&
+      allPieces.length === 3 &&
       allPieces.find((piece) => piece.name === "bishops");
 
     const knightKingVsKingDraw =
-      allPiecesNotDead.length === 3 &&
-      allPiecesNotDead.find((piece) => piece.name === "knights");
+      allPieces.length === 3 &&
+      allPieces.find((piece) => piece.name === "knights");
 
     const bishopKingVsBishopKingDraw =
-      allPiecesNotDead.length === 4 &&
-      allPiecesNotDead.find(
+      allPieces.length === 4 &&
+      allPieces.find(
         (piece, index, array) =>
           piece.name === "bishops" &&
           array.find(
@@ -291,6 +288,48 @@ function indexInClass(collection, node) {
   return -1;
 }
 
+let deadBlackPieces = {
+  team: "black",
+  pieces: {
+    bishops: 0,
+    knights: 0,
+    pawns: 0,
+    queens: 0,
+    rooks: 0,
+  },
+};
+let deadWhitePieces = {
+  team: "white",
+  pieces: {
+    bishops: 0,
+    knights: 0,
+    pawns: 0,
+    queens: 0,
+    rooks: 0,
+  },
+};
+
+function putNewPieceInGraveyard(futureDeadPiece) {
+  const deadPiecesObjectToModify = [deadWhitePieces, deadBlackPieces].find(
+    (object) => object.team === futureDeadPiece.team()
+  );
+  const keyToChange = Object.keys(deadPiecesObjectToModify.pieces).find(
+    (deadPiece) => futureDeadPiece.name === deadPiece
+  );
+  deadPiecesObjectToModify.pieces[keyToChange] =
+    deadPiecesObjectToModify.pieces[keyToChange] + 1;
+  const lostPieceElementToModify = document.querySelector(
+    `.lost-pieces-zone.${futureDeadPiece.team()}  .${keyToChange}.${
+      deadPiecesObjectToModify.team
+    }`
+  );
+  lostPieceElementToModify.classList.add("show");
+  lostPieceElementToModify.querySelector(".number").textContent =
+    deadPiecesObjectToModify.pieces[keyToChange];
+  futureDeadPiece.element.remove();
+  allPieces = allPieces.filter((piece) => piece !== futureDeadPiece);
+}
+
 class Piece {
   constructor(element, index, teamIndex, name) {
     this.element = element;
@@ -331,8 +370,6 @@ class Piece {
 
   //Handle when piece attack another
   attack(pieceAttacked, squareToGo, piecesPosition) {
-    const lostPiecesZone =
-      pieceAttacked.team() === "white" ? whiteGraveyard : blackGraveyard;
     if (pieceAttacked.team() === this.team()) {
       resetSquareSelected();
     } else if (
@@ -340,15 +377,13 @@ class Piece {
       this.isAuthorizedMove(squareToGo, piecesPosition) &&
       [rows[0], rows[rows.length - 1]].includes(squareToGo.parentElement)
     ) {
-      pieceAttacked.position = lostPiecesZone;
-      lostPiecesZone.append(pieceAttacked.element);
+      putNewPieceInGraveyard(pieceAttacked);
       this.pawnPromotion(squareToGo, piecesPosition);
     } else if (
       !willKingBeAttacked(this, squareToGo) &&
       this.isAuthorizedMove(squareToGo, piecesPosition)
     ) {
-      pieceAttacked.position = lostPiecesZone;
-      lostPiecesZone.append(pieceAttacked.element);
+      putNewPieceInGraveyard(pieceAttacked);
       squareToGo.append(this.element);
       this.position = squareToGo;
       this.firstMove = false;
@@ -400,8 +435,7 @@ class Piece {
     newPiece.position = squareToGo;
     squareToGo.append(newPiece.element);
     allPieces.push(newPiece);
-    this.position = this.team() === "white" ? whiteGraveyard : blackGraveyard;
-    this.position.append(this.element);
+    putNewPieceInGraveyard(this);
     promotionMenu.classList.remove("show", this.team());
     promotionMenuPieces.forEach((piece) => piece.classList.remove("show"));
     promotionMenuText.classList.remove("show", this.team());
@@ -975,7 +1009,7 @@ function simulateMove(pieceToModify, positionToSimulate) {
     ) {
       return {
         ...piece,
-        position: piece.team() === "white" ? whiteGraveyard : blackGraveyard,
+        position: null,
         isAuthorizedMove: () => false,
       };
     }
@@ -992,7 +1026,6 @@ function willKingBeAttacked(pieceToModify, positionToSimulate) {
       array.find(
         (otherPiece) =>
           piece.team() !== otherPiece.team() &&
-          ![whiteGraveyard, blackGraveyard].includes(otherPiece) &&
           otherPiece.isAuthorizedMove(piece.position, array)
       )
   );
