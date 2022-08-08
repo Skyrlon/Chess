@@ -130,8 +130,9 @@ body {
   margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  width: calc(var(--squares-size) * 8);
+  height: calc(var(--squares-size) * 0.5);
 }
 
 .graveyard.white {
@@ -146,18 +147,23 @@ body {
   position: relative;
   display: flex;
   flex-wrap: wrap;
-  height: calc(var(--squares-size) * 0.5);
 }
 
 .lost-pieces {
   display: none;
-  width: calc(var(--squares-size) * 0.5);
   height: calc(var(--squares-size) * 0.5);
 }
 
 .lost-pieces.show {
   display: flex;
   flex-direction: row;
+  justify-content: flex-start;
+}
+
+.lost-pieces .number {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .start-button {

@@ -325,7 +325,7 @@ function putNewPieceInGraveyard(futureDeadPiece) {
   );
   lostPieceElementToModify.classList.add("show");
   lostPieceElementToModify.querySelector(".number").textContent =
-    deadPiecesObjectToModify.pieces[keyToChange];
+    "x" + deadPiecesObjectToModify.pieces[keyToChange];
   futureDeadPiece.element.remove();
   allPieces = allPieces.filter((piece) => piece !== futureDeadPiece);
 }
