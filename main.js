@@ -557,12 +557,22 @@ class King extends Piece {
       actualPosition.row === destination.row &&
       Math.abs(actualPosition.column - destination.column) === 2 &&
       actualPosition.column > destination.column &&
-      rooksInSameTeam.find((rook) => rook.teamIndex === 0)?.firstMove;
+      rooksInSameTeam.find(
+        (rook) =>
+          (this.team() === "black" && rook.position === squares[0]) ||
+          (this.team() === "white" && rook.position === squares[56])
+      )?.firstMove &&
+      this.firstMove;
     const kingsideCastling =
       actualPosition.row === destination.row &&
       Math.abs(actualPosition.column - destination.column) === 2 &&
       actualPosition.column < destination.column &&
-      rooksInSameTeam.find((rook) => rook.teamIndex === 1)?.firstMove;
+      rooksInSameTeam.find(
+        (rook) =>
+          (this.team() === "black" && rook.position === squares[7]) ||
+          (this.team() === "white" && rook.position === squares[63])
+      )?.firstMove &&
+      this.firstMove;
     const piecesBetween = squaresBetween.find((square) =>
       piecesPosition.find((piece) => piece.position === square)
     );
