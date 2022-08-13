@@ -7,7 +7,7 @@ body {
 
 @media (orientation: landscape) {
   :root {
-    --board-size: 40vw;
+    --board-size: 80vh;
     --squares-size: calc(var(--board-size) / 8);
   }
 
@@ -25,7 +25,7 @@ body {
 
 @media (orientation: portrait) {
   :root {
-    --board-size: 90vw;
+    --board-size: 80vw;
     --squares-size: calc(var(--board-size) / 8);
   }
 
@@ -200,6 +200,10 @@ body {
 }
 
 @media (orientation: portrait) {
+  .player-turn {
+    position: absolute;
+  }
+
   .player-turn.white {
     bottom: 0%;
   }
