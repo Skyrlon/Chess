@@ -7,14 +7,14 @@ body {
 
 @media (orientation: landscape) {
   :root {
-    --board-size: 80vh;
+    --board-size: 75vh;
     --squares-size: calc(var(--board-size) / 8);
   }
 
   body {
     display: grid;
     grid-template-columns: 30% 40% 30%;
-    grid-template-rows: 1fr 5fr 1fr;
+    grid-template-rows: 1fr 8fr 1fr;
     gap: 0px 0px;
     grid-template-areas:
       "black-turn top-text flags"
@@ -25,7 +25,7 @@ body {
 
 @media (orientation: portrait) {
   :root {
-    --board-size: 80vw;
+    --board-size: 75vw;
     --squares-size: calc(var(--board-size) / 8);
   }
 
@@ -181,49 +181,32 @@ body {
 }
 
 .player-turn {
+  position: absolute;
   display: flex;
   flex-direction: column;
 }
 
-@media (orientation: landscape) {
-  .player-turn.white {
-    grid-area: white-turn;
-    justify-content: flex-end;
-    align-items: flex-end;
-  }
-
-  .player-turn.black {
-    grid-area: black-turn;
-    justify-content: flex-start;
-    align-items: flex-start;
-  }
+.player-turn.white {
+  right: 0%;
+  bottom: 0%;
 }
 
-@media (orientation: portrait) {
-  .player-turn {
-    position: absolute;
-  }
-
-  .player-turn.white {
-    bottom: 0%;
-  }
-
-  .player-turn.black {
-    top: 0%;
-  }
+.player-turn.black {
+  left: 0%;
+  top: 0%;
 }
 
 .player-turn-black-text {
   display: none;
   color: black;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 .player-turn-white-text {
   display: none;
   color: white;
   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 .player-turn.white .player-turn-white-text {
