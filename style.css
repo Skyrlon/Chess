@@ -7,44 +7,29 @@ body {
 
 @media (orientation: landscape) {
   :root {
-    --board-size: 70vh;
+    --board-container-size: 70vh;
+    --board-size: calc(var(--board-container-size) * 0.9);
     --squares-size: calc(var(--board-size) / 8);
-  }
-
-  body {
-    display: grid;
-    grid-template-columns: 30% 40% 30%;
-    grid-template-rows: 1fr 8fr 1fr;
-    gap: 0px 0px;
-    grid-template-areas:
-      "black-turn top-text flags"
-      ". board ."
-      ". bottom-text white-turn";
   }
 }
 
 @media (orientation: portrait) {
   :root {
-    --board-size: 70vw;
+    --board-container-size: 70vw;
+    --board-size: calc(var(--board-container-size) * 0.9);
     --squares-size: calc(var(--board-size) / 8);
   }
+}
 
-  body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
-  body > * {
-    flex-basis: auto;
-  }
-
-  .language {
-    position: absolute;
-    top: 1%;
-    right: 1%;
-  }
+body > * {
+  flex-basis: auto;
 }
 
 .board-container {
@@ -199,14 +184,14 @@ body {
 .player-turn-black-text {
   display: none;
   color: black;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 }
 
 .player-turn-white-text {
   display: none;
   color: white;
   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 }
 
 .player-turn.white .player-turn-white-text {
@@ -229,7 +214,7 @@ body {
   align-items: center;
   justify-content: center;
   color: red;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 }
 
 .black-king-attacked {
@@ -339,6 +324,9 @@ body {
 }
 
 .language {
+  position: absolute;
+  top: 1%;
+  right: 1%;
   grid-area: flags;
   display: flex;
   flex-direction: row;
